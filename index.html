@@ -1,22 +1,808 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My First Website</title>
-    <style>
-        body {
-            font-family: Arial;
-            text-align: center;
-            background-color: #f0f0f0;
-        }
-        h1 {
-            color: blue;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Braking System Design — BAJA SAE & Metta EV | Kripal Detroja</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #0f1117;
+  --ink2: #3a3d47;
+  --muted: #6b7080;
+  --border: rgba(255,255,255,0.1);
+  --surface: #1a1d26;
+  --surface2: #21242f;
+  --accent: #e84118;
+  --accent2: #1a56db;
+  --gold: #f0a500;
+  --white: #ffffff;
+  --bg: #0f1117;
+  --font-head: 'DM Serif Display', Georgia, serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--white);
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1rem 4rem;
+  background: rgba(15,17,23,0.9);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { font-family: var(--font-mono); font-size: 12px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; }
+.nav-back { font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+.nav-back:hover { color: var(--white); }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 140px 4rem 5rem;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0f1117 0%, #1a0a05 100%);
+}
+.hero-bg-text {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-family: var(--font-head); font-size: 22vw; font-weight: 400;
+  color: rgba(232,65,24,0.04); white-space: nowrap; pointer-events: none;
+  letter-spacing: -0.02em; line-height: 1;
+}
+.hero-tag {
+  font-family: var(--font-mono); font-size: 11px; color: var(--accent);
+  letter-spacing: 0.14em; text-transform: uppercase;
+  border: 1px solid rgba(232,65,24,0.3); background: rgba(232,65,24,0.08);
+  padding: 5px 14px; border-radius: 20px;
+  display: inline-block; margin-bottom: 1.5rem; width: fit-content;
+}
+.hero h1 {
+  font-family: var(--font-head);
+  font-size: clamp(3rem, 7vw, 6.5rem);
+  line-height: 1.0; color: var(--white);
+  margin-bottom: 1.5rem;
+}
+.hero h1 em { font-style: italic; color: var(--accent); }
+.hero-meta {
+  display: flex; gap: 3rem; flex-wrap: wrap;
+  border-top: 1px solid var(--border); padding-top: 2rem; margin-top: 1rem;
+}
+.meta-item { display: flex; flex-direction: column; gap: 4px; }
+.meta-label { font-family: var(--font-mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+.meta-value { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.85); }
+
+/* LAYOUT */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 4rem; }
+section { padding: 6rem 4rem; }
+.section-label {
+  font-family: var(--font-mono); font-size: 10px; color: var(--accent);
+  letter-spacing: 0.16em; text-transform: uppercase;
+  margin-bottom: 1rem; display: flex; align-items: center; gap: 12px;
+}
+.section-label::after { content: ''; flex: 1; max-width: 60px; height: 1px; background: var(--accent); opacity: 0.4; }
+h2 { font-family: var(--font-head); font-size: clamp(2rem, 4vw, 3rem); color: var(--white); margin-bottom: 1rem; }
+h2 em { font-style: italic; color: var(--accent); }
+.lead { font-size: 1.1rem; color: rgba(255,255,255,0.6); max-width: 680px; margin-bottom: 3rem; line-height: 1.8; }
+
+/* OVERVIEW CARDS */
+.overview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 4rem; }
+.overview-card { background: var(--surface); padding: 1.75rem 1.5rem; }
+.ov-number { font-family: var(--font-head); font-size: 2.5rem; color: var(--accent); line-height: 1; margin-bottom: 0.5rem; }
+.ov-label { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.4; }
+
+/* EQUATION BLOCKS */
+.eq-section { margin-bottom: 4rem; }
+.eq-step-header {
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 2rem;
+}
+.step-num {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--accent); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+  flex-shrink: 0;
+}
+.step-title { font-family: var(--font-head); font-size: 1.6rem; color: var(--white); }
+.step-title em { font-style: italic; color: var(--gold); }
+
+.eq-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.75rem 2rem;
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+.eq-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; background: var(--accent);
+}
+.eq-name {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+.eq-formula {
+  font-family: var(--font-mono); font-size: 1.2rem;
+  color: var(--gold); background: rgba(240,165,0,0.06);
+  padding: 1rem 1.25rem; border-radius: 8px;
+  margin-bottom: 1rem; letter-spacing: 0.02em;
+  border: 1px solid rgba(240,165,0,0.15);
+  overflow-x: auto; white-space: nowrap;
+}
+.eq-desc { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.7; }
+.eq-vars { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
+.var-tag {
+  font-family: var(--font-mono); font-size: 11px;
+  background: rgba(26,86,219,0.12); color: #7aa7f5;
+  border: 1px solid rgba(26,86,219,0.2);
+  padding: 3px 10px; border-radius: 4px;
+}
+.eq-result {
+  margin-top: 1rem; padding: 0.75rem 1rem;
+  background: rgba(232,65,24,0.08); border-radius: 8px;
+  border: 1px solid rgba(232,65,24,0.15);
+  font-size: 13px; color: rgba(255,255,255,0.7);
+  display: flex; align-items: center; gap: 10px;
+}
+.eq-result strong { color: var(--accent); font-family: var(--font-mono); }
+
+/* DIAGRAM */
+.diagram-wrap {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 16px; padding: 2.5rem; margin: 2rem 0;
+  display: flex; justify-content: center;
+}
+svg text { font-family: 'DM Mono', monospace; }
+
+/* FLOW TABLE */
+.flow-table { width: 100%; border-collapse: collapse; margin: 2rem 0; }
+.flow-table th {
+  text-align: left; font-family: var(--font-mono); font-size: 11px;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 0.75rem 1rem; border-bottom: 1px solid var(--border);
+}
+.flow-table td {
+  padding: 0.9rem 1rem; font-size: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.75);
+  vertical-align: top;
+}
+.flow-table tr:hover td { background: rgba(255,255,255,0.02); }
+.flow-table .param { font-family: var(--font-mono); color: var(--gold); font-size: 13px; }
+.flow-table .value { font-family: var(--font-mono); color: #7aa7f5; font-size: 13px; }
+
+/* CONCLUSION */
+.conclusion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
+.concl-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.5rem;
+}
+.concl-card.highlight { border-color: rgba(232,65,24,0.3); background: rgba(232,65,24,0.06); }
+.concl-label { font-family: var(--font-mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+.concl-value { font-family: var(--font-head); font-size: 2rem; color: var(--accent); margin-bottom: 0.25rem; }
+.concl-desc { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+/* PHOTO PLACEHOLDER */
+.photo-placeholder {
+  background: var(--surface2); border: 1px dashed rgba(255,255,255,0.15);
+  border-radius: 16px; padding: 3rem 2rem;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1rem; text-align: center; margin: 2rem 0;
+  min-height: 280px;
+}
+.photo-placeholder-icon { font-size: 2.5rem; opacity: 0.3; }
+.photo-placeholder-text { font-size: 13px; color: var(--muted); font-family: var(--font-mono); }
+.photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 2rem 0; }
+
+/* TECH STACK */
+.tech-stack { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 2rem; }
+.tech-chip {
+  font-family: var(--font-mono); font-size: 12px;
+  border: 1px solid var(--border); color: rgba(255,255,255,0.6);
+  padding: 6px 14px; border-radius: 20px;
+  background: var(--surface);
+}
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--border); margin: 0 4rem; }
+
+/* FOOTER */
+footer {
+  padding: 2rem 4rem;
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--font-mono); font-size: 12px; color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  nav, section, footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .hero { padding: 120px 1.5rem 3rem; }
+  .overview-grid { grid-template-columns: 1fr 1fr; }
+  .conclusion-grid, .photo-grid { grid-template-columns: 1fr; }
+  .hero-meta { gap: 1.5rem; }
+}
+</style>
 </head>
 <body>
 
-    <h1>Welcome to My Website 🚀</h1>
-    <p>I built this using GitHub Pages!</p>
+<nav>
+  <a href="#" class="nav-logo">kripal.dev</a>
+  <a href="#" class="nav-back">← All Projects</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg-text">BRAKE</div>
+  <div class="hero-tag">Project 01 — Vehicle Dynamics & Braking</div>
+  <h1>Braking System<br><em>Design</em> &amp;<br>Analysis.</h1>
+  <div class="hero-meta">
+    <div class="meta-item">
+      <span class="meta-label">Application</span>
+      <span class="meta-value">BAJA SAE ATV · Metta EV</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Tools Used</span>
+      <span class="meta-value">SolidWorks · ANSYS · Excel VDA</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Standard</span>
+      <span class="meta-value">IS 14664:2010</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Result</span>
+      <span class="meta-value">~30% Braking Improvement</span>
+    </div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<section>
+  <div class="section-label">Overview</div>
+  <h2>Engineered to <em>Stop.</em></h2>
+  <p class="lead">
+    Designed and validated complete hydraulic disc braking systems for two vehicles — a BAJA SAE all-terrain vehicle (ATV) for competitive motorsport, and the Metta EV commercial electric vehicle. The core challenge: selecting and sizing brake disc geometry using first-principles vehicle dynamics, then validating performance through simulation.
+  </p>
+
+  <div class="overview-grid">
+    <div class="overview-card">
+      <div class="ov-number">~30%</div>
+      <div class="ov-label">Braking performance improvement over baseline</div>
+    </div>
+    <div class="overview-card">
+      <div class="ov-number">2</div>
+      <div class="ov-label">Vehicles designed for — ATV + Commercial EV</div>
+    </div>
+    <div class="overview-card">
+      <div class="ov-number">IS 14664</div>
+      <div class="ov-label">Compliance standard verified for Metta EV</div>
+    </div>
+    <div class="overview-card">
+      <div class="ov-number">396°C</div>
+      <div class="ov-label">Peak disc temperature under emergency stop</div>
+    </div>
+  </div>
+
+  <!-- PHOTO PLACEHOLDER — replace with your actual CAD/simulation images -->
+  <div class="photo-grid">
+    <div class="photo-placeholder">
+      <div class="photo-placeholder-icon">📷</div>
+      <div class="photo-placeholder-text">→ Insert your brake disc CAD render here</div>
+    </div>
+    <div class="photo-placeholder">
+      <div class="photo-placeholder-icon">📷</div>
+      <div class="photo-placeholder-text">→ Insert your ANSYS stress simulation image here</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- VEHICLE DYNAMICS EQUATIONS -->
+<section>
+  <div class="section-label">Methodology</div>
+  <h2>Vehicle Dynamics<br><em>Equations.</em></h2>
+  <p class="lead">
+    The braking system is engineered bottom-up using vehicle dynamics first principles. Each parameter feeds into the next — from pedal force through hydraulics, to rotor torque, to stopping distance. Below is the complete calculation chain used in this design.
+  </p>
+
+  <!-- STEP 1: PEDAL & HYDRAULICS -->
+  <div class="eq-section">
+    <div class="eq-step-header">
+      <div class="step-num">01</div>
+      <div class="step-title">Pedal Ratio &amp; <em>Hydraulic Pressure</em></div>
+    </div>
+
+    <!-- DIAGRAM: Pedal lever -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 700 200" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <!-- Pivot point -->
+        <circle cx="350" cy="100" r="10" fill="#e84118"/>
+        <text x="350" y="130" text-anchor="middle" fill="#6b7080" font-size="11">Pivot</text>
+        <!-- Pedal arm to foot -->
+        <line x1="350" y1="100" x2="110" y2="100" stroke="rgba(255,255,255,0.3)" stroke-width="6" stroke-linecap="round"/>
+        <!-- Pedal -->
+        <rect x="70" y="75" width="40" height="50" rx="4" fill="#21242f" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+        <text x="90" y="145" text-anchor="middle" fill="#6b7080" font-size="11">Pedal</text>
+        <!-- Force arrow down on pedal -->
+        <line x1="90" y1="55" x2="90" y2="78" stroke="#e84118" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="90" y="50" text-anchor="middle" fill="#e84118" font-size="11">Fd = 300N</text>
+        <!-- L2 label -->
+        <line x1="110" y1="88" x2="348" y2="88" stroke="#f0a500" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="230" y="82" text-anchor="middle" fill="#f0a500" font-size="11">L2 = 12 inch (pivot to pedal)</text>
+        <!-- Short arm to MC -->
+        <line x1="350" y1="100" x2="500" y2="100" stroke="rgba(255,255,255,0.3)" stroke-width="6" stroke-linecap="round"/>
+        <!-- MC cylinder -->
+        <rect x="500" y="75" width="80" height="50" rx="6" fill="#21242f" stroke="rgba(26,86,219,0.4)" stroke-width="1.5"/>
+        <text x="540" y="105" text-anchor="middle" fill="#7aa7f5" font-size="11">Master Cyl.</text>
+        <text x="540" y="120" text-anchor="middle" fill="#7aa7f5" font-size="10">Ø19.5mm</text>
+        <!-- Force arrow into MC -->
+        <line x1="498" y1="100" x2="582" y2="100" stroke="#1a56db" stroke-width="2" marker-end="url(#arr2)"/>
+        <text x="540" y="68" text-anchor="middle" fill="#7aa7f5" font-size="11">Fbp = 2400N</text>
+        <!-- L1 label -->
+        <line x1="352" y1="112" x2="498" y2="112" stroke="#f0a500" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="425" y="126" text-anchor="middle" fill="#f0a500" font-size="11">L1 = 1.5 inch</text>
+        <!-- Ratio label -->
+        <text x="350" y="175" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="12">Mechanical Advantage (Pedal Ratio) = L2 / L1</text>
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#e84118"/>
+          </marker>
+          <marker id="arr2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#1a56db"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Pedal Ratio (Mechanical Leverage)</div>
+      <div class="eq-formula">PR = L2 / L1 = 12 / 1.5 = 8</div>
+      <p class="eq-desc">The pedal acts as a lever. L2 is the distance from the pivot to the foot pad; L1 is the distance from pivot to the master cylinder pushrod. A ratio of 8 means every 1N of foot force generates 8N at the master cylinder input.</p>
+      <div class="eq-vars">
+        <span class="var-tag">L2 = 12 inch (pivot → foot)</span>
+        <span class="var-tag">L1 = 1.5 inch (pivot → MC)</span>
+        <span class="var-tag">PR = 8 (dimensionless)</span>
+      </div>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Total Force to Master Cylinder (Fbp)</div>
+      <div class="eq-formula">Fbp = Fd × PR = 300 × 8 = 2400 N</div>
+      <p class="eq-desc">The amplified hydraulic input force delivered to the master cylinder bore. This is the mechanical force before hydraulic conversion.</p>
+      <div class="eq-vars">
+        <span class="var-tag">Fd = 300 N (driver foot force)</span>
+        <span class="var-tag">Fbp = 2400 N</span>
+      </div>
+      <div class="eq-result"><strong>Result:</strong> 2400 N applied to master cylinder piston</div>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Hydraulic Pressure in System (P)</div>
+      <div class="eq-formula">P = Fbp / Amc = 2400 / 298.65 = 8.04 N/mm²</div>
+      <p class="eq-desc">Pascal's law converts the piston force into fluid pressure that is transmitted equally through all brake lines to each caliper. The master cylinder bore area is calculated from its diameter.</p>
+      <div class="eq-formula" style="font-size:1rem;">Amc = π × (b/2)² = π × (19.5/2)² = 298.65 mm²</div>
+      <div class="eq-vars">
+        <span class="var-tag">b = 19.5 mm (bore dia)</span>
+        <span class="var-tag">Amc = 298.65 mm²</span>
+        <span class="var-tag">P = 8.04 N/mm²</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: CALIPER & CLAMPING FORCE -->
+  <div class="eq-section">
+    <div class="eq-step-header">
+      <div class="step-num">02</div>
+      <div class="step-title">Caliper Clamping &amp; <em>Rotor Torque</em></div>
+    </div>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 700 220" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <!-- Rotor disc -->
+        <circle cx="350" cy="110" r="80" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="20"/>
+        <circle cx="350" cy="110" r="80" fill="none" stroke="rgba(232,65,24,0.3)" stroke-width="2"/>
+        <circle cx="350" cy="110" r="5" fill="#e84118"/>
+        <!-- Effective radius arrow -->
+        <line x1="350" y1="110" x2="420" y2="110" stroke="#f0a500" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="388" y="104" text-anchor="middle" fill="#f0a500" font-size="11">Re = 92.5mm</text>
+        <!-- OD dimension -->
+        <line x1="350" y1="110" x2="350" y2="30" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="365" y="62" fill="rgba(255,255,255,0.4)" font-size="10">OD=190mm</text>
+        <!-- ID dimension -->
+        <circle cx="350" cy="110" r="45" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="365" y="100" fill="rgba(255,255,255,0.3)" font-size="10">ID=180mm</text>
+        <!-- Caliper block left -->
+        <rect x="130" y="80" width="60" height="60" rx="6" fill="#21242f" stroke="rgba(26,86,219,0.5)" stroke-width="1.5"/>
+        <text x="160" y="107" text-anchor="middle" fill="#7aa7f5" font-size="11">Caliper</text>
+        <text x="160" y="121" text-anchor="middle" fill="#7aa7f5" font-size="10">Ø19.5mm</text>
+        <!-- Clamping force arrows -->
+        <line x1="190" y1="110" x2="268" y2="110" stroke="#e84118" stroke-width="2" marker-end="url(#arr3)"/>
+        <line x1="432" y1="110" x2="510" y2="110" stroke="#e84118" stroke-width="2"/>
+        <rect x="510" y="80" width="60" height="60" rx="6" fill="#21242f" stroke="rgba(26,86,219,0.5)" stroke-width="1.5"/>
+        <text x="540" y="107" text-anchor="middle" fill="#7aa7f5" font-size="11">Caliper</text>
+        <text x="195" y="103" fill="#e84118" font-size="11">Fclamp</text>
+        <!-- Torque arc -->
+        <path d="M 350 30 A 80 80 0 0 1 430 110" fill="none" stroke="#f0a500" stroke-width="2" stroke-dasharray="6,3"/>
+        <text x="435" y="70" fill="#f0a500" font-size="11">Torque</text>
+        <text x="435" y="83" fill="#f0a500" font-size="11">199.8 Nm</text>
+        <defs>
+          <marker id="arr3" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#e84118"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Clamping Force at Caliper (Fmax)</div>
+      <div class="eq-formula">Fmax = P × Acal × μ = 8.04 × 298.65 × 0.45 = 2160 N</div>
+      <p class="eq-desc">The hydraulic pressure acts on the caliper piston area to generate a clamping force on the brake pad. The friction coefficient (μ) between pad and disc converts this clamp load into a friction force that creates braking torque.</p>
+      <div class="eq-vars">
+        <span class="var-tag">P = 8.04 N/mm²</span>
+        <span class="var-tag">Acal = 298.65 mm²</span>
+        <span class="var-tag">μ = 0.45 (pad-disc friction)</span>
+        <span class="var-tag">Fmax = 2160 N</span>
+      </div>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Effective Disc Radius (Re)</div>
+      <div class="eq-formula">Re = (OD + ID) / 4 = (190 + 180) / 4 = 92.5 mm</div>
+      <p class="eq-desc">The effective radius is the mean radius at which the brake pad contacts the disc. It lies between the inner and outer disc diameters. This is the moment arm for torque calculation.</p>
+      <div class="eq-vars">
+        <span class="var-tag">OD = 190 mm (outer diameter)</span>
+        <span class="var-tag">ID = 180 mm (inner diameter)</span>
+        <span class="var-tag">Re = 92.5 mm = 0.0925 m</span>
+      </div>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Braking Torque on Rotor (Trotor)</div>
+      <div class="eq-formula">Trotor = Fmax × Re = 2160 × 0.0925 = 199.8 Nm</div>
+      <p class="eq-desc">The torque generated at the disc rotor by the caliper clamping force acting at the effective radius. This torque acts to resist wheel rotation and decelerates the vehicle.</p>
+      <div class="eq-vars">
+        <span class="var-tag">Fmax = 2160 N</span>
+        <span class="var-tag">Re = 0.0925 m</span>
+        <span class="var-tag">Trotor = 199.8 Nm</span>
+      </div>
+      <div class="eq-result"><strong>Result:</strong> 199.8 Nm of braking torque per axle</div>
+    </div>
+  </div>
+
+  <!-- STEP 3: BRAKING FORCE & DECELERATION -->
+  <div class="eq-section">
+    <div class="eq-step-header">
+      <div class="step-num">03</div>
+      <div class="step-title">Braking Force &amp; <em>Deceleration</em></div>
+    </div>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 700 200" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <!-- Vehicle body -->
+        <rect x="200" y="70" width="300" height="80" rx="10" fill="#21242f" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <text x="350" y="115" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="13">Vehicle Mass M = 2000 kg</text>
+        <!-- Wheels -->
+        <circle cx="240" cy="165" r="25" fill="#1a1d26" stroke="rgba(232,65,24,0.4)" stroke-width="2"/>
+        <circle cx="460" cy="165" r="25" fill="#1a1d26" stroke="rgba(232,65,24,0.4)" stroke-width="2"/>
+        <!-- Tire radius -->
+        <line x1="460" y1="165" x2="460" y2="140" stroke="#f0a500" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="475" y="155" fill="#f0a500" font-size="11">Rt = 0.25m</text>
+        <!-- Velocity arrow -->
+        <line x1="560" y1="110" x2="640" y2="110" stroke="rgba(255,255,255,0.3)" stroke-width="2" marker-end="url(#arrV)"/>
+        <text x="600" y="104" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="11">v = 50 km/h</text>
+        <!-- Braking force arrow (opposing) -->
+        <line x1="195" y1="110" x2="100" y2="110" stroke="#e84118" stroke-width="2.5" marker-end="url(#arrB)"/>
+        <text x="148" y="104" text-anchor="middle" fill="#e84118" font-size="11">Fb = 2397 N</text>
+        <!-- Ground line -->
+        <line x1="50" y1="190" x2="650" y2="190" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <defs>
+          <marker id="arrV" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="rgba(255,255,255,0.3)"/>
+          </marker>
+          <marker id="arrB" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#e84118"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Braking Force at Tyre Contact Patch (Fb)</div>
+      <div class="eq-formula">Fb = Trotor / Rt</div>
+      <p class="eq-desc">The rotor torque is converted into a longitudinal braking force at the tyre contact patch by dividing by the tyre rolling radius. This is the actual retarding force acting on the road surface.</p>
+      <div class="eq-formula" style="font-size:1rem;">Fb_front = 199.8 / 0.25 = 799.2 N &nbsp;|&nbsp; Fb_rear = 799.2 × 2 = 1598.4 N</div>
+      <div class="eq-vars">
+        <span class="var-tag">Rt = 0.25 m (tyre radius)</span>
+        <span class="var-tag">Front = 799.2 N</span>
+        <span class="var-tag">Rear total = 1598.4 N</span>
+        <span class="var-tag">Total Fb = 2397.6 N</span>
+      </div>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Vehicle Deceleration (a)</div>
+      <div class="eq-formula">a = Ft / M = 2397.6 / 2000 = 1.199 m/s²</div>
+      <p class="eq-desc">Newton's second law applied to the braking event. Total braking force divided by vehicle mass gives the deceleration. Note: the required deceleration from load transfer analysis is higher — this gap identified the need for design optimisation.</p>
+      <div class="eq-vars">
+        <span class="var-tag">Ft = 2397.6 N (total braking force)</span>
+        <span class="var-tag">M = 2000 kg</span>
+        <span class="var-tag">a = 1.199 m/s²</span>
+      </div>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Stopping Distance (s)</div>
+      <div class="eq-formula">s = v² / (2 × a) = 13.89² / (2 × 1.199) = 80.5 m</div>
+      <p class="eq-desc">Using kinematics, the stopping distance from initial velocity to rest. v = 50 km/h = 13.89 m/s. This value was used to evaluate compliance against the required braking performance target.</p>
+      <div class="eq-vars">
+        <span class="var-tag">v = 13.89 m/s (50 km/h)</span>
+        <span class="var-tag">a = 1.199 m/s²</span>
+        <span class="var-tag">s = 80.5 m</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: LOAD TRANSFER -->
+  <div class="eq-section">
+    <div class="eq-step-header">
+      <div class="step-num">04</div>
+      <div class="step-title">Dynamic Load Transfer &amp; <em>Axle Bias</em></div>
+    </div>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 700 220" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <!-- Vehicle side view -->
+        <rect x="150" y="80" width="400" height="70" rx="8" fill="#21242f" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <!-- CG point -->
+        <circle cx="350" cy="72" r="8" fill="#f0a500"/>
+        <text x="350" y="60" text-anchor="middle" fill="#f0a500" font-size="11">CG</text>
+        <!-- hcg arrow -->
+        <line x1="350" y1="80" x2="350" y2="165" stroke="#f0a500" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="365" y="130" fill="#f0a500" font-size="11">hcg = 0.4526m</text>
+        <!-- Wheelbase -->
+        <line x1="185" y1="175" x2="515" y2="175" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+        <text x="350" y="192" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="11">Wheelbase Wb = 2.18 m</text>
+        <!-- Front wheel -->
+        <circle cx="185" cy="155" r="30" fill="#1a1d26" stroke="rgba(26,86,219,0.5)" stroke-width="2"/>
+        <text x="185" y="158" text-anchor="middle" fill="#7aa7f5" font-size="10">FRONT</text>
+        <!-- Rear wheel -->
+        <circle cx="515" cy="155" r="30" fill="#1a1d26" stroke="rgba(232,65,24,0.4)" stroke-width="2"/>
+        <text x="515" y="158" text-anchor="middle" fill="#e84118" font-size="10">REAR</text>
+        <!-- a dimension -->
+        <line x1="185" y1="200" x2="350" y2="200" stroke="rgba(240,165,0,0.3)" stroke-width="1"/>
+        <text x="268" y="215" text-anchor="middle" fill="#f0a500" font-size="10">a = 0.745m</text>
+        <!-- b dimension -->
+        <line x1="350" y1="200" x2="515" y2="200" stroke="rgba(240,165,0,0.3)" stroke-width="1"/>
+        <text x="432" y="215" text-anchor="middle" fill="#f0a500" font-size="10">b = 1.435m</text>
+        <!-- Load transfer arrow (forward) -->
+        <line x1="350" y1="72" x2="200" y2="72" stroke="#1a56db" stroke-width="2" marker-end="url(#arrLT)"/>
+        <text x="275" y="66" text-anchor="middle" fill="#7aa7f5" font-size="10">Weight transfer</text>
+        <defs>
+          <marker id="arrLT" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#1a56db"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Static Axle Loads</div>
+      <div class="eq-formula">Wf_static = W × b / Wb &nbsp;|&nbsp; Wr_static = W × a / Wb</div>
+      <p class="eq-desc">The static load distribution between front and rear axles depends on the centre of gravity (CG) position relative to each axle. 'a' is the CG-to-rear distance, 'b' is CG-to-front distance.</p>
+      <div class="eq-formula" style="font-size:1rem;">Wf = 17640 × 1.435 / 2.18 = 11615 N &nbsp;(615 kg)</div>
+      <div class="eq-formula" style="font-size:1rem;">Wr = 17640 × 0.745 / 2.18 = 6025 N &nbsp;(1185 kg)</div>
+      <div class="eq-vars">
+        <span class="var-tag">Wb = 2.18 m</span>
+        <span class="var-tag">a = 0.745 m</span>
+        <span class="var-tag">b = 1.435 m</span>
+        <span class="var-tag">W = 17640 N (1800 kg)</span>
+      </div>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Dynamic Load Transfer During Braking</div>
+      <div class="eq-formula">ΔW = M × a_dec × hcg / Wb</div>
+      <p class="eq-desc">During braking, inertia shifts weight forward onto the front axle. The amount of load transferred depends on vehicle mass, deceleration rate, CG height, and wheelbase. This is why front brakes always require more braking force than rears.</p>
+      <div class="eq-formula" style="font-size:1rem;">ΔW = 1800 × 0.899 × 0.4526 / 2.18 = 336 N &nbsp;(34.3 kg)</div>
+      <div class="eq-vars">
+        <span class="var-tag">hcg = 0.4526 m</span>
+        <span class="var-tag">a_dec = 0.899 m/s²</span>
+        <span class="var-tag">ΔW = 336 N transferred to front</span>
+      </div>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Required Braking Force per Axle</div>
+      <div class="eq-formula">Freq_f = μ_tg × Wf_dynamic &nbsp;|&nbsp; Freq_r = μ_tg × Wr_dynamic</div>
+      <p class="eq-desc">The required braking force on each axle is limited by the tyre-ground friction coefficient (μ = 0.8 for off-road). Exceeding this causes wheel lock-up. This determines the ideal brake force bias.</p>
+      <div class="eq-formula" style="font-size:1rem;">Freq_f = 0.8 × 8958 = 7166 N &nbsp;|&nbsp; Freq_r = 0.8 × 8682 = 6945 N</div>
+      <div class="eq-vars">
+        <span class="var-tag">μ_tg = 0.8 (tyre-ground)</span>
+        <span class="var-tag">Front load = 8958 N (dynamic)</span>
+        <span class="var-tag">Rear load = 8682 N (dynamic)</span>
+      </div>
+      <div class="eq-result"><strong>Bias:</strong> 50.8% front / 49.2% rear — near-ideal for this vehicle CG</div>
+    </div>
+  </div>
+
+  <!-- STEP 5: HEAT & THERMAL -->
+  <div class="eq-section">
+    <div class="eq-step-header">
+      <div class="step-num">05</div>
+      <div class="step-title">Thermal Analysis — <em>Heat Generation</em></div>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Kinetic Energy to Heat Conversion</div>
+      <div class="eq-formula">KE = ½ × M × v² = ½ × 2000 × 13.89² = 192,901 J</div>
+      <p class="eq-desc">During an emergency stop, all kinetic energy of the vehicle is converted into heat at the brake disc. This represents the total thermal energy the disc must absorb and dissipate in a single stop event.</p>
+      <div class="eq-vars">
+        <span class="var-tag">M = 2000 kg</span>
+        <span class="var-tag">v = 13.89 m/s</span>
+        <span class="var-tag">KE = 192,901 J</span>
+      </div>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Disc Temperature Rise (ΔT)</div>
+      <div class="eq-formula">ΔT = KE / (m_disc × Cp) = 192901 / (0.9 × 586) = 365.8 °C</div>
+      <p class="eq-desc">The temperature rise of the disc using the specific heat capacity of cast iron (Cp = 586 J/kg·K). This assumes all heat is absorbed by the disc with no convective dissipation — a conservative worst-case assumption.</p>
+      <div class="eq-vars">
+        <span class="var-tag">m_disc = 0.9 kg</span>
+        <span class="var-tag">Cp = 586 J/kg·K (cast iron)</span>
+        <span class="var-tag">ΔT = 365.8 °C</span>
+      </div>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Final Disc Temperature</div>
+      <div class="eq-formula">T_final = T_initial + ΔT = 30 + 365.8 = 395.8 °C</div>
+      <p class="eq-desc">The peak disc temperature under a worst-case emergency stop from 50 km/h. This is well within the operating limit of standard cast iron brake discs (~600°C), confirming the material selection is adequate for the application.</p>
+      <div class="eq-vars">
+        <span class="var-tag">T_initial = 30°C</span>
+        <span class="var-tag">T_final = 395.8°C</span>
+        <span class="var-tag">Within safe limit ✓</span>
+      </div>
+      <div class="eq-result"><strong>Validated:</strong> Peak disc temp 395.8°C — within cast iron operating limit of 600°C</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- INPUT / OUTPUT TABLE -->
+<section>
+  <div class="section-label">Results</div>
+  <h2>Complete I/O <em>Summary.</em></h2>
+  <p class="lead">All input parameters and computed outputs from the braking system calculation sheet.</p>
+
+  <table class="flow-table">
+    <thead>
+      <tr>
+        <th>Parameter</th>
+        <th>Symbol</th>
+        <th>Value</th>
+        <th>Unit</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="5" style="color:var(--accent); font-family:var(--font-mono); font-size:11px; padding-top:1.25rem; padding-bottom:0.25rem; letter-spacing:0.08em;">INPUTS — DRIVER & GEOMETRY</td></tr>
+      <tr><td>Driver foot force</td><td class="param">Fd</td><td class="value">300</td><td>N</td><td>Typical maximum pedal effort</td></tr>
+      <tr><td>Pedal length (pivot to foot)</td><td class="param">L2</td><td class="value">12</td><td>inch</td><td>Long arm of brake pedal lever</td></tr>
+      <tr><td>Pedal length (pivot to MC)</td><td class="param">L1</td><td class="value">1.5</td><td>inch</td><td>Short arm to master cylinder</td></tr>
+      <tr><td>Master cylinder bore dia</td><td class="param">b_mc</td><td class="value">19.5</td><td>mm</td><td>Market standard component</td></tr>
+      <tr><td>Caliper bore diameter</td><td class="param">b_cal</td><td class="value">19.5</td><td>mm</td><td>Matched to MC for 1:1 ratio</td></tr>
+      <tr><td>Disc OD (front & rear)</td><td class="param">OD</td><td class="value">190</td><td>mm</td><td>Selected from dynamics calculation</td></tr>
+      <tr><td>Disc ID (front & rear)</td><td class="param">ID</td><td class="value">180</td><td>mm</td><td>Pad contact inner boundary</td></tr>
+      <tr><td>Tyre radius</td><td class="param">Rt</td><td class="value">0.25</td><td>m</td><td>Rolling radius at vehicle weight</td></tr>
+      <tr><td>Vehicle mass</td><td class="param">M</td><td class="value">2000</td><td>kg</td><td>Gross vehicle weight</td></tr>
+      <tr><td>Wheelbase</td><td class="param">Wb</td><td class="value">2.18</td><td>m</td><td>Front-to-rear axle distance</td></tr>
+      <tr><td>CG height</td><td class="param">hcg</td><td class="value">0.4526</td><td>m</td><td>Measured from ground</td></tr>
+      <tr><td>Pad-disc friction coeff</td><td class="param">μ_pad</td><td class="value">0.45</td><td>—</td><td>Typical semi-metallic pad</td></tr>
+      <tr><td>Tyre-ground friction coeff</td><td class="param">μ_tg</td><td class="value">0.80</td><td>—</td><td>Off-road surface assumption</td></tr>
+      <tr><td colspan="5" style="color:var(--accent); font-family:var(--font-mono); font-size:11px; padding-top:1.25rem; padding-bottom:0.25rem; letter-spacing:0.08em;">OUTPUTS — CALCULATED RESULTS</td></tr>
+      <tr><td>Pedal ratio</td><td class="param">PR</td><td class="value">8.0</td><td>—</td><td>Mechanical leverage factor</td></tr>
+      <tr><td>Force at master cylinder</td><td class="param">Fbp</td><td class="value">2400</td><td>N</td><td>Hydraulic input force</td></tr>
+      <tr><td>System pressure</td><td class="param">P</td><td class="value">8.04</td><td>N/mm²</td><td>Equal at all calipers (Pascal's law)</td></tr>
+      <tr><td>Caliper clamping force</td><td class="param">Fmax</td><td class="value">2160</td><td>N</td><td>Per caliper clamping load</td></tr>
+      <tr><td>Effective disc radius</td><td class="param">Re</td><td class="value">92.5</td><td>mm</td><td>Mean pad contact radius</td></tr>
+      <tr><td>Rotor braking torque</td><td class="param">Trotor</td><td class="value">199.8</td><td>Nm</td><td>Front and rear (equal)</td></tr>
+      <tr><td>Braking force (front)</td><td class="param">Fb_f</td><td class="value">799.2</td><td>N</td><td>At tyre contact patch</td></tr>
+      <tr><td>Braking force (rear total)</td><td class="param">Fb_r</td><td class="value">1598.4</td><td>N</td><td>Two rear wheels combined</td></tr>
+      <tr><td>Total braking force</td><td class="param">Ft</td><td class="value">2397.6</td><td>N</td><td>Sum of all four wheels</td></tr>
+      <tr><td>Deceleration achieved</td><td class="param">a</td><td class="value">1.199</td><td>m/s²</td><td>Actual vs 0.899 m/s² required</td></tr>
+      <tr><td>Stopping distance</td><td class="param">s</td><td class="value">80.5</td><td>m</td><td>From 50 km/h to standstill</td></tr>
+      <tr><td>Dynamic load (front)</td><td class="param">Wf_dyn</td><td class="value">8958</td><td>N</td><td>Under braking deceleration</td></tr>
+      <tr><td>Dynamic load (rear)</td><td class="param">Wr_dyn</td><td class="value">8682</td><td>N</td><td>Under braking deceleration</td></tr>
+      <tr><td>Brake bias (front / rear)</td><td class="param">—</td><td class="value">50.8 / 49.2</td><td>%</td><td>Near-ideal for vehicle CG position</td></tr>
+      <tr><td>Peak disc temperature</td><td class="param">T_final</td><td class="value">395.8</td><td>°C</td><td>Within cast iron limit of 600°C ✓</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONCLUSION -->
+<section>
+  <div class="section-label">Outcome</div>
+  <h2>What This <em>Achieved.</em></h2>
+
+  <div class="conclusion-grid">
+    <div class="concl-card highlight">
+      <div class="concl-label">Performance Improvement</div>
+      <div class="concl-value">~30%</div>
+      <div class="concl-desc">Braking performance improvement over the previous design through simulation-driven disc sizing and pedal ratio optimisation.</div>
+    </div>
+    <div class="concl-card">
+      <div class="concl-label">Regulatory Compliance</div>
+      <div class="concl-value">IS 14664</div>
+      <div class="concl-desc">Metta EV braking system fully validated against Indian Standard IS 14664:2010 for commercial electric vehicles.</div>
+    </div>
+    <div class="concl-card">
+      <div class="concl-label">Thermal Safety Margin</div>
+      <div class="concl-value">204°C</div>
+      <div class="concl-desc">Peak disc temperature of 395.8°C is 204°C below the material failure threshold — confirming safe margin.</div>
+    </div>
+    <div class="concl-card">
+      <div class="concl-label">Brake Bias</div>
+      <div class="concl-value">50.8 / 49.2</div>
+      <div class="concl-desc">Front-to-rear brake bias is near-ideal for the vehicle CG position, minimising risk of front lock-up or rear instability.</div>
+    </div>
+  </div>
+
+  <!-- SIMULATION PHOTO PLACEHOLDERS -->
+  <div style="margin-top: 3rem;">
+    <p style="font-family: var(--font-mono); font-size:11px; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1rem;">→ Upload your images below (replace placeholders in WordPress)</p>
+    <div class="photo-grid">
+      <div class="photo-placeholder">
+        <div class="photo-placeholder-icon">📷</div>
+        <div class="photo-placeholder-text">ANSYS Structural Simulation — Brake Disc Stress</div>
+      </div>
+      <div class="photo-placeholder">
+        <div class="photo-placeholder-icon">📷</div>
+        <div class="photo-placeholder-text">SolidWorks CAD Model — Full Braking Assembly</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TECH STACK -->
+  <div style="margin-top: 2rem;">
+    <div class="section-label" style="margin-bottom:1rem;">Tools &amp; Standards Used</div>
+    <div class="tech-stack">
+      <span class="tech-chip">SolidWorks</span>
+      <span class="tech-chip">ANSYS Structural</span>
+      <span class="tech-chip">Microsoft Excel (VDA)</span>
+      <span class="tech-chip">Vehicle Dynamics Analysis</span>
+      <span class="tech-chip">IS 14664:2010</span>
+      <span class="tech-chip">BAJA SAE Rules</span>
+      <span class="tech-chip">FEA Simulation</span>
+      <span class="tech-chip">Pascal's Law (Hydraulics)</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>Kripal Detroja — Project 01 / 11</span>
+  <span style="color:var(--accent);">Braking System Design · BAJA SAE &amp; Metta EV</span>
+</footer>
 
 </body>
 </html>
