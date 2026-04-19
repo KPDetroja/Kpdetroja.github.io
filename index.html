@@ -3,250 +3,364 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Braking System Design — BAJA SAE & Metta EV | Kripal Detroja</title>
+<title>Kripal Detroja — Engineering Portfolio</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --border:rgba(255,255,255,0.1);--surface:#1a1d26;--surface2:#21242f;
+  --white:#fff;--bg:#0f1117;--muted:#6b7080;
+  --font-head:'DM Serif Display',Georgia,serif;
+  --font-body:'Outfit',sans-serif;
+  --font-mono:'DM Mono',monospace;
+  --proj-accent:#1a56db;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--white);font-size:15px;line-height:1.65;overflow-x:hidden}
 
-:root {
-  --ink: #0f1117;
-  --ink2: #3a3d47;
-  --muted: #6b7080;
-  --border: rgba(255,255,255,0.1);
-  --surface: #1a1d26;
-  --surface2: #21242f;
-  --accent: #e84118;
-  --accent2: #1a56db;
-  --gold: #f0a500;
-  --white: #ffffff;
-  --bg: #0f1117;
-  --font-head: 'DM Serif Display', Georgia, serif;
-  --font-body: 'Outfit', sans-serif;
-  --font-mono: 'DM Mono', monospace;
+/* ===== MASTER NAV ===== */
+.master-nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(15,17,23,0.97);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:0;overflow-x:auto;
+  padding:0 1.5rem;
+  scrollbar-width:none;
 }
+.master-nav::-webkit-scrollbar{display:none}
+.nav-home{
+  font-family:var(--font-mono);font-size:11px;color:#e84118;
+  letter-spacing:.12em;text-transform:uppercase;text-decoration:none;
+  padding:.85rem 1.25rem .85rem 0;border-right:1px solid var(--border);
+  margin-right:.75rem;white-space:nowrap;flex-shrink:0;
+}
+.nav-proj{
+  font-family:var(--font-mono);font-size:10px;color:var(--muted);
+  text-decoration:none;padding:.85rem .6rem;white-space:nowrap;
+  flex-shrink:0;transition:color .15s;letter-spacing:.03em;
+  border-bottom:2px solid transparent;
+}
+.nav-proj:hover{color:var(--white);border-bottom-color:var(--proj-accent,#1a56db)}
 
-html { scroll-behavior: smooth; }
-body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--white);
-  font-size: 16px;
-  line-height: 1.7;
-  overflow-x: hidden;
+/* ===== PROJECT BLOCK SEPARATOR ===== */
+.project-block{
+  border-top:3px solid var(--proj-accent);
+  margin-top:0;
 }
+.proj-sep{
+  display:flex;align-items:center;gap:1rem;
+  padding:.75rem 4rem;
+  background:rgba(255,255,255,0.02);
+  border-bottom:1px solid var(--border);
+}
+.proj-num-tag{
+  font-family:var(--font-mono);font-size:10px;
+  color:var(--proj-accent);
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--proj-accent);
+  padding:2px 10px;border-radius:20px;
+  letter-spacing:.1em;text-transform:uppercase;
+}
+.proj-title-tag{
+  font-family:var(--font-mono);font-size:11px;
+  color:rgba(255,255,255,0.4);letter-spacing:.05em;
+}
+.proj-end-line{height:1px;background:var(--border);margin:0}
 
-/* NAV */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 1rem 4rem;
-  background: rgba(15,17,23,0.9);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
-}
-.nav-logo { font-family: var(--font-mono); font-size: 12px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; }
-.nav-back { font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
-.nav-back:hover { color: var(--white); }
+/* ===== SHARED TYPOGRAPHY ===== */
+section{padding:3.5rem 4rem}
+h2{font-family:var(--font-head);font-size:clamp(1.8rem,3.5vw,2.6rem);color:var(--white);margin-bottom:.75rem;line-height:1.1}
+h2 em{font-style:italic;color:var(--proj-accent)}
+.lead{font-size:1rem;color:rgba(255,255,255,0.6);max-width:700px;margin-bottom:2rem;line-height:1.75}
+.divider{height:1px;background:var(--border);margin:0 4rem}
 
-/* HERO */
-.hero {
-  min-height: 100vh;
-  display: flex; flex-direction: column; justify-content: flex-end;
-  padding: 140px 4rem 5rem;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(180deg, #0f1117 0%, #1a0a05 100%);
-}
-.hero-bg-text {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  font-family: var(--font-head); font-size: 22vw; font-weight: 400;
-  color: rgba(232,65,24,0.04); white-space: nowrap; pointer-events: none;
-  letter-spacing: -0.02em; line-height: 1;
-}
-.hero-tag {
-  font-family: var(--font-mono); font-size: 11px; color: var(--accent);
-  letter-spacing: 0.14em; text-transform: uppercase;
-  border: 1px solid rgba(232,65,24,0.3); background: rgba(232,65,24,0.08);
-  padding: 5px 14px; border-radius: 20px;
-  display: inline-block; margin-bottom: 1.5rem; width: fit-content;
-}
-.hero h1 {
-  font-family: var(--font-head);
-  font-size: clamp(3rem, 7vw, 6.5rem);
-  line-height: 1.0; color: var(--white);
-  margin-bottom: 1.5rem;
-}
-.hero h1 em { font-style: italic; color: var(--accent); }
-.hero-meta {
-  display: flex; gap: 3rem; flex-wrap: wrap;
-  border-top: 1px solid var(--border); padding-top: 2rem; margin-top: 1rem;
-}
-.meta-item { display: flex; flex-direction: column; gap: 4px; }
-.meta-label { font-family: var(--font-mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
-.meta-value { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.85); }
+/* ===== SECTION LABEL ===== */
+.slabel,.section-label{font-family:var(--font-mono);font-size:10px;color:var(--proj-accent);letter-spacing:.16em;text-transform:uppercase;margin-bottom:.75rem;display:flex;align-items:center;gap:12px}
+.slabel::after,.section-label::after{content:'';flex:1;max-width:50px;height:1px;background:var(--proj-accent);opacity:.4}
 
-/* LAYOUT */
-.container { max-width: 1100px; margin: 0 auto; padding: 0 4rem; }
-section { padding: 6rem 4rem; }
-.section-label {
-  font-family: var(--font-mono); font-size: 10px; color: var(--accent);
-  letter-spacing: 0.16em; text-transform: uppercase;
-  margin-bottom: 1rem; display: flex; align-items: center; gap: 12px;
-}
-.section-label::after { content: ''; flex: 1; max-width: 60px; height: 1px; background: var(--accent); opacity: 0.4; }
-h2 { font-family: var(--font-head); font-size: clamp(2rem, 4vw, 3rem); color: var(--white); margin-bottom: 1rem; }
-h2 em { font-style: italic; color: var(--accent); }
-.lead { font-size: 1.1rem; color: rgba(255,255,255,0.6); max-width: 680px; margin-bottom: 3rem; line-height: 1.8; }
+/* ===== HERO ===== */
+.hero{min-height:85vh;display:flex;flex-direction:column;justify-content:flex-end;padding:100px 4rem 3.5rem;position:relative;overflow:hidden}
+.hero-bg,.hero-bg-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-head);font-size:16vw;font-weight:400;color:rgba(255,255,255,0.025);white-space:nowrap;pointer-events:none;line-height:1}
+.hero-tag{font-family:var(--font-mono);font-size:10px;color:var(--proj-accent);letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--proj-accent);background:rgba(255,255,255,0.04);opacity:.8;padding:4px 12px;border-radius:20px;display:inline-block;margin-bottom:1.25rem}
+.hero h1{font-family:var(--font-head);font-size:clamp(2.5rem,6vw,5rem);line-height:1;color:var(--white);margin-bottom:1.25rem}
+.hero h1 em{font-style:italic;color:var(--proj-accent)}
+.hero-sub{font-size:1rem;color:rgba(255,255,255,0.5);max-width:560px;line-height:1.75;margin-bottom:2.5rem}
+.hero-meta{display:flex;gap:2.5rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:1.5rem}
+.meta-item{display:flex;flex-direction:column;gap:3px}
+.meta-label{font-family:var(--font-mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.meta-value{font-size:13px;font-weight:500;color:rgba(255,255,255,0.8)}
 
-/* OVERVIEW CARDS */
-.overview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 4rem; }
-.overview-card { background: var(--surface); padding: 1.75rem 1.5rem; }
-.ov-number { font-family: var(--font-head); font-size: 2.5rem; color: var(--accent); line-height: 1; margin-bottom: 0.5rem; }
-.ov-label { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.4; }
+/* ===== OVERVIEW GRIDS ===== */
+.overview-grid,.ov-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:2.5rem}
+.overview-card,.ov-card{background:var(--surface);padding:1.25rem 1.25rem}
+.ov-number,.ov-num{font-family:var(--font-head);font-size:1.9rem;color:var(--proj-accent);line-height:1;margin-bottom:.35rem}
+.ov-label,.ov-lbl{font-size:12px;color:rgba(255,255,255,0.45);line-height:1.4}
 
-/* EQUATION BLOCKS */
-.eq-section { margin-bottom: 4rem; }
-.eq-step-header {
-  display: flex; align-items: center; gap: 1rem;
-  margin-bottom: 2rem;
-}
-.step-num {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: var(--accent); color: white;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-mono); font-size: 13px; font-weight: 500;
-  flex-shrink: 0;
-}
-.step-title { font-family: var(--font-head); font-size: 1.6rem; color: var(--white); }
-.step-title em { font-style: italic; color: var(--gold); }
+/* ===== EQUATION CARDS ===== */
+.eq-section{margin-bottom:2.5rem}
+.eq-step-header,.eq-hdr{display:flex;align-items:center;gap:.85rem;margin-bottom:1.5rem}
+.step-num{width:34px;height:34px;border-radius:50%;background:var(--proj-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:11px;font-weight:500;flex-shrink:0}
+.step-title{font-family:var(--font-head);font-size:1.35rem;color:var(--white)}
+.step-title em{font-style:italic;color:var(--proj-accent)}
+.eq-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.35rem 1.75rem;margin-bottom:.75rem;position:relative;overflow:hidden}
+.eq-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--proj-accent)}
+.eq-name{font-family:var(--font-mono);font-size:10px;color:var(--proj-accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.6rem}
+.eq-formula,.eq-f{font-family:var(--font-mono);font-size:.95rem;color:#f0a500;background:rgba(240,165,0,0.06);padding:.75rem 1rem;border-radius:6px;margin-bottom:.75rem;border:1px solid rgba(240,165,0,0.15);overflow-x:auto;white-space:nowrap;display:block}
+.eq-formula.blue,.eq-f.blue{color:#7aa7f5;background:rgba(26,86,219,0.06);border-color:rgba(26,86,219,0.15)}
+.eq-desc{font-size:13px;color:rgba(255,255,255,0.6);line-height:1.65}
+.eq-vars{display:flex;flex-wrap:wrap;gap:6px;margin-top:.75rem}
+.var-tag{font-family:var(--font-mono);font-size:10px;background:rgba(26,86,219,0.1);color:#7aa7f5;border:1px solid rgba(26,86,219,0.2);padding:2px 8px;border-radius:4px}
+.eq-result{margin-top:.75rem;padding:.6rem .9rem;background:rgba(232,65,24,0.08);border-radius:6px;border:1px solid rgba(232,65,24,0.15);font-size:12px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:8px}
+.eq-result strong{color:#e84118;font-family:var(--font-mono)}
 
-.eq-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.75rem 2rem;
-  margin-bottom: 1rem;
-  position: relative;
-  overflow: hidden;
-}
-.eq-card::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-  width: 3px; background: var(--accent);
-}
-.eq-name {
-  font-family: var(--font-mono); font-size: 11px;
-  color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase;
-  margin-bottom: 0.75rem;
-}
-.eq-formula {
-  font-family: var(--font-mono); font-size: 1.2rem;
-  color: var(--gold); background: rgba(240,165,0,0.06);
-  padding: 1rem 1.25rem; border-radius: 8px;
-  margin-bottom: 1rem; letter-spacing: 0.02em;
-  border: 1px solid rgba(240,165,0,0.15);
-  overflow-x: auto; white-space: nowrap;
-}
-.eq-desc { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.7; }
-.eq-vars { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
-.var-tag {
-  font-family: var(--font-mono); font-size: 11px;
-  background: rgba(26,86,219,0.12); color: #7aa7f5;
-  border: 1px solid rgba(26,86,219,0.2);
-  padding: 3px 10px; border-radius: 4px;
-}
-.eq-result {
-  margin-top: 1rem; padding: 0.75rem 1rem;
-  background: rgba(232,65,24,0.08); border-radius: 8px;
-  border: 1px solid rgba(232,65,24,0.15);
-  font-size: 13px; color: rgba(255,255,255,0.7);
-  display: flex; align-items: center; gap: 10px;
-}
-.eq-result strong { color: var(--accent); font-family: var(--font-mono); }
+/* ===== TABLES ===== */
+.flow-table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:13px}
+.flow-table th{text-align:left;font-family:var(--font-mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:.6rem .85rem;border-bottom:1px solid var(--border)}
+.flow-table td{padding:.75rem .85rem;border-bottom:1px solid rgba(255,255,255,0.04);color:rgba(255,255,255,0.7);vertical-align:top}
+.flow-table tr:hover td{background:rgba(255,255,255,0.02)}
+.flow-table .param{font-family:var(--font-mono);color:#f0a500;font-size:12px}
+.flow-table .value{font-family:var(--font-mono);color:#7aa7f5;font-size:12px}
 
-/* DIAGRAM */
-.diagram-wrap {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 16px; padding: 2.5rem; margin: 2rem 0;
-  display: flex; justify-content: center;
-}
-svg text { font-family: 'DM Mono', monospace; }
+/* ===== CONCLUSION / STAT CARDS ===== */
+.conclusion-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:1.5rem}
+.concl-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem}
+.concl-card.highlight{border-color:rgba(232,65,24,0.3);background:rgba(232,65,24,0.06)}
+.concl-label{font-family:var(--font-mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem}
+.concl-value{font-family:var(--font-head);font-size:1.75rem;color:var(--proj-accent);margin-bottom:.2rem}
+.concl-desc{font-size:12px;color:rgba(255,255,255,0.5)}
 
-/* FLOW TABLE */
-.flow-table { width: 100%; border-collapse: collapse; margin: 2rem 0; }
-.flow-table th {
-  text-align: left; font-family: var(--font-mono); font-size: 11px;
-  color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
-  padding: 0.75rem 1rem; border-bottom: 1px solid var(--border);
-}
-.flow-table td {
-  padding: 0.9rem 1rem; font-size: 14px;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  color: rgba(255,255,255,0.75);
-  vertical-align: top;
-}
-.flow-table tr:hover td { background: rgba(255,255,255,0.02); }
-.flow-table .param { font-family: var(--font-mono); color: var(--gold); font-size: 13px; }
-.flow-table .value { font-family: var(--font-mono); color: #7aa7f5; font-size: 13px; }
+/* ===== DIAGRAM WRAPS ===== */
+.diagram-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:2rem;margin:1.5rem 0;display:flex;justify-content:center}
 
-/* CONCLUSION */
-.conclusion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
-.concl-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 1.5rem;
+/* ===== CODE BLOCKS ===== */
+.code-wrap{background:#0d1117;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:1.5rem 0}
+.code-hdr,.code-header{display:flex;align-items:center;justify-content:space-between;padding:.65rem 1.1rem;background:var(--surface2);border-bottom:1px solid var(--border)}
+.code-fn,.code-filename{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+.code-lang{font-family:var(--font-mono);font-size:10px;color:var(--proj-accent);background:rgba(255,255,255,0.05);padding:2px 8px;border-radius:4px;border:1px solid var(--proj-accent)}
+.code-body{padding:1.25rem;overflow-x:auto}
+pre{font-family:var(--font-mono);font-size:12px;line-height:1.65;color:rgba(255,255,255,0.8);white-space:pre}
+.cm,.c-comment{color:#6b7080}.ck,.c-keyword{color:#c792ea}.cs,.c-string{color:#c3e88d}.cn,.c-number{color:#f78c6c}.cf,.c-func{color:#82aaff}.cv,.c-var{color:#f0a500}
+
+/* ===== INFO / CONCEPT CARDS ===== */
+.info-card,.concept-card,.inno-box,.contrib-box,.innovation-box,.context-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.5rem 1.75rem;margin-bottom:.9rem;border-left:3px solid var(--proj-accent)}
+.info-label,.concept-label,.inno-lbl,.contrib-lbl,.innovation-label{font-family:var(--font-mono);font-size:10px;color:var(--proj-accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.6rem}
+.info-text,.concept-text,.inno-text,.contrib-text,.innovation-text{font-size:14px;color:rgba(255,255,255,0.7);line-height:1.7}
+
+/* ===== NDA BOX ===== */
+.nda-box{background:rgba(240,165,0,0.05);border:1px solid rgba(240,165,0,0.25);border-radius:10px;padding:1.25rem 1.75rem;margin:1.5rem 0;display:flex;gap:.9rem;align-items:flex-start}
+.nda-icon{font-size:1.1rem;flex-shrink:0;margin-top:2px}
+.nda-text{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.6}
+.nda-text strong{color:#f0a500}
+
+/* ===== 2-COL ===== */
+.two-col,.about-grid,.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:start}
+.two-col p{color:rgba(255,255,255,0.6);margin-bottom:.85rem;font-size:14px;line-height:1.75}
+
+/* ===== ARCH / FEATURE CARDS ===== */
+.arch-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin:1.5rem 0}
+.arch-card,.sys-card,.feat-card,.app-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem;position:relative;overflow:hidden}
+.arch-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--border)}
+.arch-card.mine::before{background:var(--proj-accent)}
+.arch-card.team::before{background:#10b981}
+.arch-card.hw::before{background:#f0a500}
+.arch-badge{font-family:var(--font-mono);font-size:9px;padding:2px 7px;border-radius:4px;margin-bottom:.65rem;display:inline-block}
+.arch-badge.mine{background:rgba(124,58,237,0.12);color:#a78bfa;border:1px solid rgba(124,58,237,0.25)}
+.arch-badge.team{background:rgba(16,185,129,0.1);color:#34d399;border:1px solid rgba(16,185,129,0.2)}
+.arch-badge.hw{background:rgba(240,165,0,0.1);color:#fbbf24;border:1px solid rgba(240,165,0,0.2)}
+.arch-title,.feat-title,.app-title{font-size:13px;font-weight:600;color:var(--white);margin-bottom:.35rem}
+.arch-desc,.feat-desc,.app-desc,.sys-desc{font-size:12px;color:var(--muted);line-height:1.55}
+.feat-icon,.app-icon,.sys-icon{font-size:1.2rem;margin-bottom:.5rem}
+
+/* ===== SYSTEM GRID ===== */
+.system-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0}
+.sys-card.highlight{border-color:rgba(26,86,219,0.25);background:rgba(26,86,219,0.04)}
+
+/* ===== LEVEL CARDS ===== */
+.level-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:1.5rem 0}
+.level-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.level-header{padding:1.25rem;border-bottom:1px solid var(--border)}
+.level-num{font-family:var(--font-mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem}
+.level-title{font-family:var(--font-head);font-size:1.25rem;color:var(--white)}
+.level-body{padding:1rem 1.25rem}
+.level-feat{display:flex;gap:7px;align-items:flex-start;margin-bottom:.5rem;font-size:12px;color:rgba(255,255,255,0.6);line-height:1.45}
+.feat-dot{width:5px;height:5px;border-radius:50%;background:var(--proj-accent);flex-shrink:0;margin-top:5px}
+
+/* ===== SCRIPT CARDS ===== */
+.script-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin:1.5rem 0}
+.script-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem}
+.script-name{font-family:var(--font-mono);font-size:12px;color:#a78bfa;margin-bottom:.4rem}
+.script-desc{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* ===== FLOW NODES ===== */
+.flow-row{display:flex;align-items:center;flex-wrap:wrap;margin:.4rem 0}
+.flow-node{background:var(--surface);border:1px solid rgba(124,58,237,0.3);border-radius:7px;padding:.5rem .9rem;font-size:11px;font-family:var(--font-mono);color:#a78bfa;white-space:nowrap}
+.flow-node.green{border-color:rgba(16,185,129,0.3);color:#34d399;background:rgba(16,185,129,0.04)}
+.flow-node.red{border-color:rgba(239,68,68,0.3);color:#f87171;background:rgba(239,68,68,0.04)}
+.flow-arrow{font-size:14px;color:var(--muted);padding:0 .4rem}
+
+/* ===== TECH STACK PILLS ===== */
+.tech-stack,.tech-pills,.pill-grid{display:flex;flex-wrap:wrap;gap:7px;margin-top:1.25rem}
+.tech-chip,.tp,.tc,.pill{font-family:var(--font-mono);font-size:11px;border:1px solid var(--border);color:rgba(255,255,255,0.55);padding:4px 10px;border-radius:20px;background:var(--surface)}
+.tp.highlight,.pill.red,.pill.blue,.pill.purple,.pill.green{border-color:var(--proj-accent);color:var(--proj-accent);background:rgba(255,255,255,0.03)}
+
+/* ===== PARAMETER CARDS ===== */
+.param-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem}
+.param-sym{font-family:var(--font-mono);font-size:1rem;color:#f0a500;margin-bottom:.2rem}
+.param-name{font-size:12px;font-weight:500;color:var(--white);margin-bottom:.2rem}
+.param-desc{font-size:11px;color:var(--muted);line-height:1.45}
+.badge{display:inline-block;font-family:var(--font-mono);font-size:9px;margin-top:5px;padding:2px 7px;border-radius:4px}
+.badge-u{background:rgba(232,65,24,0.1);color:#f07060;border:1px solid rgba(232,65,24,0.2)}
+.badge-c{background:rgba(26,86,219,0.1);color:#7aa7f5;border:1px solid rgba(26,86,219,0.15)}
+.param-type{display:inline-block;font-family:var(--font-mono);font-size:9px;margin-top:5px;padding:2px 7px;border-radius:4px}
+.param-type.user{background:rgba(232,65,24,0.1);color:#f07060;border:1px solid rgba(232,65,24,0.2)}
+.param-type.calc{background:rgba(26,86,219,0.1);color:#7aa7f5;border:1px solid rgba(26,86,219,0.15)}
+
+/* ===== SW CARDS ===== */
+.sw-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin:1.5rem 0}
+.sw-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem}
+.sw-card.s,.sw-card.strength{border-color:rgba(22,163,74,0.25)}
+.sw-card.w,.sw-card.weakness{border-color:rgba(232,65,24,0.2)}
+.sw-title{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.85rem}
+.sw-card.s .sw-title,.sw-card.strength .sw-title{color:#4ade80}
+.sw-card.w .sw-title,.sw-card.weakness .sw-title{color:#f87171}
+.sw-item{font-size:12px;color:rgba(255,255,255,0.6);padding:.4rem 0;border-bottom:1px solid var(--border);line-height:1.45;display:flex;gap:7px;align-items:flex-start}
+.sw-item:last-child{border-bottom:none}
+.dot,.sw-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.sw-card.s .dot,.sw-card.s .sw-dot,.sw-card.strength .sw-dot{background:#4ade80}
+.sw-card.w .dot,.sw-card.w .sw-dot,.sw-card.weakness .sw-dot{background:#f87171}
+
+/* ===== PROCESS STEPS ===== */
+.process-list{display:flex;flex-direction:column;gap:0;margin:1.5rem 0}
+.process-step{display:flex;gap:1.25rem;align-items:flex-start;padding:1.25rem 0;border-bottom:1px solid var(--border)}
+.process-step:last-child{border-bottom:none}
+.p-num{width:32px;height:32px;border-radius:50%;background:var(--proj-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:11px;flex-shrink:0;margin-top:2px}
+.p-title{font-size:14px;font-weight:600;color:var(--white);margin-bottom:.3rem}
+.p-desc{font-size:13px;color:rgba(255,255,255,0.6);line-height:1.65}
+
+/* ===== COMPANY BOX ===== */
+.company-box,.paper-box{background:var(--surface);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:1.5rem 1.75rem;margin:1.5rem 0;display:flex;gap:1.25rem;align-items:center}
+.company-icon,.paper-icon{font-size:2rem;flex-shrink:0}
+.company-label,.paper-label{font-family:var(--font-mono);font-size:9px;color:var(--proj-accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem}
+.company-name,.paper-title{font-size:14px;font-weight:600;color:var(--white);margin-bottom:.2rem}
+.company-sub,.paper-sub{font-size:12px;color:var(--muted)}
+
+/* ===== PROTO STAT ===== */
+.proto-stat{display:flex;align-items:center;gap:1.25rem;background:rgba(232,65,24,0.05);border:1px solid rgba(232,65,24,0.2);border-radius:10px;padding:1.25rem 1.75rem;margin:1.25rem 0}
+.proto-num{font-family:var(--font-head);font-size:3rem;color:#e84118;line-height:1;flex-shrink:0}
+.proto-text{font-size:14px;color:rgba(255,255,255,0.65);line-height:1.65}
+
+/* ===== WIP BADGE ===== */
+.wip-badge{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:10px;color:#a78bfa;letter-spacing:.12em;text-transform:uppercase;border:1px solid rgba(124,58,237,0.4);background:rgba(124,58,237,0.1);padding:5px 12px;border-radius:20px;margin-bottom:1.75rem}
+.wip-dot{width:7px;height:7px;border-radius:50%;background:#a78bfa;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+/* ===== FLOW PIPELINE (point cloud) ===== */
+.flow{display:flex;align-items:center;gap:0;margin:1.5rem 0;flex-wrap:wrap}
+.flow-node{border-radius:8px;padding:.85rem 1rem;min-width:120px;text-align:center;background:var(--surface);border:1px solid rgba(124,58,237,0.3)}
+.flow-node-title{font-size:12px;font-weight:600;color:var(--white);margin-bottom:.2rem}
+.flow-node-sub{font-size:10px;font-family:var(--font-mono);color:var(--muted)}
+.flow-node.active{border-color:rgba(124,58,237,0.7);background:rgba(124,58,237,0.08)}
+.flow-node.active .flow-node-title{color:#c4b5fd}
+.flow-node.done{border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.05)}
+.flow-node.done .flow-node-title{color:#34d399}
+.flow-node.todo{opacity:.4}
+
+/* ===== PROGRESS ===== */
+.progress-wrap{margin:1.75rem 0}
+.progress-label{display:flex;justify-content:space-between;margin-bottom:.4rem;font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+.progress-bar{height:3px;background:var(--surface2);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:2px;width:35%}
+
+/* ===== UPDATE LOG ===== */
+.update-item{display:flex;gap:1.1rem;align-items:flex-start;padding:.75rem 0;border-bottom:1px solid var(--border)}
+.update-item:last-child{border-bottom:none}
+.update-date{font-family:var(--font-mono);font-size:10px;color:var(--muted);white-space:nowrap;min-width:70px;margin-top:2px}
+.update-text{font-size:13px;color:rgba(255,255,255,0.6);line-height:1.55}
+.update-text strong{color:var(--white)}
+
+/* ===== TECH SECTION ===== */
+.tech-section{background:var(--surface);border-radius:14px;padding:1.5rem 1.75rem;margin:1.5rem 0}
+.tech-cat{font-family:var(--font-mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.65rem;margin-top:1.1rem}
+.tech-cat:first-child{margin-top:0}
+
+/* ===== STAT HERO CARDS ===== */
+.stat-card{background:var(--white);border:1px solid #e2e4ea;border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.85rem;margin-bottom:10px;transition:transform .2s}
+.stat-card:hover{transform:translateX(3px)}
+.stat-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.stat-icon.blue{background:#eef3fd}.stat-icon.red{background:#fef0ed}.stat-icon.gold{background:#fef8e6}.stat-icon.green{background:#eef8f0}
+.stat-label{font-size:10px;color:#6b7080;font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase}
+.stat-value{font-size:13px;font-weight:500;color:#0f1117}
+
+/* ===== MATRIX ===== */
+.matrix-block{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.35rem 1.75rem;margin-bottom:.85rem}
+.matrix-label{font-family:var(--font-mono);font-size:10px;color:var(--proj-accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.85rem}
+
+/* ===== SKILLS GRID ===== */
+.skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.skill-pill{background:#fff;border:1px solid #e2e4ea;border-radius:7px;padding:8px 12px;display:flex;align-items:center;gap:8px}
+.skill-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.skill-dot.blue{background:#1a56db}.skill-dot.red{background:#e84118}.skill-dot.gold{background:#c9940a}.skill-dot.green{background:#16a34a}
+.skill-name{font-size:12px;font-weight:500;color:#0f1117}
+
+/* ===== TIMELINE ===== */
+.timeline{position:relative;padding-left:1.75rem}
+.timeline::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:1px;background:var(--border)}
+.timeline-item{position:relative;margin-bottom:2rem}
+.timeline-dot{position:absolute;left:-1.75rem;top:5px;width:12px;height:12px;border-radius:50%;background:var(--white);border:2px solid var(--proj-accent)}
+.timeline-meta{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-bottom:.2rem}
+.timeline-role{font-size:.95rem;font-weight:600;color:var(--white)}
+.timeline-org{font-size:13px;color:var(--proj-accent);margin-bottom:.35rem}
+.timeline-desc{font-size:13px;color:rgba(255,255,255,0.6)}
+
+/* ===== HERO (light version in braking) ===== */
+.hero.light-hero{background:var(--white)}
+.hero.light-hero h1{color:#0f1117}
+.hero.light-hero .hero-tag{color:#1a56db;border-color:#c7d7f5;background:#eef3fd}
+.hero.light-hero .hero-sub{color:#3a3d47}
+.hero.light-hero .hero-meta{border-color:#e2e4ea}
+.hero.light-hero .meta-label{color:#6b7080}
+.hero.light-hero .meta-value{color:#0f1117}
+.hero-badges{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:2rem}
+.badge-old{font-family:var(--font-mono);font-size:10px;background:#f7f8fb;color:#3a3d47;padding:4px 10px;border-radius:5px;border:1px solid #e2e4ea;letter-spacing:.04em}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  section{padding:2.5rem 1.75rem}
+  .divider{margin:0 1.75rem}
+  .proj-sep{padding:.65rem 1.75rem}
+  .hero{padding:80px 1.75rem 2.5rem;min-height:70vh}
+  .hero-bg,.hero-bg-text{font-size:22vw}
+  .overview-grid,.ov-grid{grid-template-columns:1fr 1fr}
+  .two-col,.about-grid,.conclusion-grid,.sw-grid,.level-grid,.script-grid,.system-grid{grid-template-columns:1fr;gap:1rem}
+  .arch-grid{grid-template-columns:1fr 1fr}
+  .hero-meta{gap:1.5rem}
+  .flow{flex-direction:column;align-items:flex-start;gap:.4rem}
+  .flow-arrow{transform:rotate(90deg);padding:.2rem 0}
+  .master-nav{padding:0 1rem}
 }
-.concl-card.highlight { border-color: rgba(232,65,24,0.3); background: rgba(232,65,24,0.06); }
-.concl-label { font-family: var(--font-mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
-.concl-value { font-family: var(--font-head); font-size: 2rem; color: var(--accent); margin-bottom: 0.25rem; }
-.concl-desc { font-size: 13px; color: rgba(255,255,255,0.5); }
-
-/* PHOTO PLACEHOLDER */
-.photo-placeholder {
-  background: var(--surface2); border: 1px dashed rgba(255,255,255,0.15);
-  border-radius: 16px; padding: 3rem 2rem;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 1rem; text-align: center; margin: 2rem 0;
-  min-height: 280px;
-}
-.photo-placeholder-icon { font-size: 2.5rem; opacity: 0.3; }
-.photo-placeholder-text { font-size: 13px; color: var(--muted); font-family: var(--font-mono); }
-.photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 2rem 0; }
-
-/* TECH STACK */
-.tech-stack { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 2rem; }
-.tech-chip {
-  font-family: var(--font-mono); font-size: 12px;
-  border: 1px solid var(--border); color: rgba(255,255,255,0.6);
-  padding: 6px 14px; border-radius: 20px;
-  background: var(--surface);
-}
-
-/* DIVIDER */
-.divider { height: 1px; background: var(--border); margin: 0 4rem; }
-
-/* FOOTER */
-footer {
-  padding: 2rem 4rem;
-  display: flex; justify-content: space-between; align-items: center;
-  font-family: var(--font-mono); font-size: 12px; color: var(--muted);
-  border-top: 1px solid var(--border);
-}
-
-@media (max-width: 768px) {
-  nav, section, footer { padding-left: 1.5rem; padding-right: 1.5rem; }
-  .hero { padding: 120px 1.5rem 3rem; }
-  .overview-grid { grid-template-columns: 1fr 1fr; }
-  .conclusion-grid, .photo-grid { grid-template-columns: 1fr; }
-  .hero-meta { gap: 1.5rem; }
+@media(max-width:600px){
+  .arch-grid{grid-template-columns:1fr}
+  .ov-grid,.overview-grid{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
 <body>
 
-<nav>
-  <a href="#" class="nav-logo">kripal.dev</a>
-  <a href="#" class="nav-back">← All Projects</a>
+<nav class="master-nav">
+  <a href="#brake" class="nav-home">Kripal.dev</a>
+  <a href="#brake" class="nav-proj">01. Braking System Design</a>
+<a href="#curvic" class="nav-proj">02. Parametric Curvic Coupling</a>
+<a href="#vr" class="nav-proj">03. VR Driver Simulator</a>
+<a href="#coupling" class="nav-proj">04. Coupling Design — Patent</a>
+<a href="#harness" class="nav-proj">05. Wiring Harness Design</a>
+<a href="#additive" class="nav-proj">06. Additive Components</a>
+<a href="#strain" class="nav-proj">07. Strain Gauge Simulation</a>
+<a href="#pointcloud" class="nav-proj">09. Point Cloud → CAD</a>
 </nav>
 
+<div id="brake" class="project-block" style="--proj-accent:#e84118">
+<div class="proj-sep"><span class="proj-num-tag">Project 01</span><span class="proj-title-tag">Braking System Design</span></div>
 <!-- HERO -->
 <div class="hero">
   <div class="hero-bg-text">BRAKE</div>
@@ -299,15 +413,8 @@ footer {
     </div>
   </div>
 
-  <!-- PHOTO PLACEHOLDER — replace with your actual CAD/simulation images -->
-  <div class="photo-grid">
-    <div class="photo-placeholder">
-      <div class="photo-placeholder-icon">📷</div>
-      <div class="photo-placeholder-text">→ Insert your brake disc CAD render here</div>
-    </div>
-    <div class="photo-placeholder">
-      <div class="photo-placeholder-icon">📷</div>
-      <div class="photo-placeholder-text">→ Insert your ANSYS stress simulation image here</div>
+  
+  
     </div>
   </div>
 </section>
@@ -771,14 +878,7 @@ footer {
   <!-- SIMULATION PHOTO PLACEHOLDERS -->
   <div style="margin-top: 3rem;">
     <p style="font-family: var(--font-mono); font-size:11px; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1rem;">→ Upload your images below (replace placeholders in WordPress)</p>
-    <div class="photo-grid">
-      <div class="photo-placeholder">
-        <div class="photo-placeholder-icon">📷</div>
-        <div class="photo-placeholder-text">ANSYS Structural Simulation — Brake Disc Stress</div>
-      </div>
-      <div class="photo-placeholder">
-        <div class="photo-placeholder-icon">📷</div>
-        <div class="photo-placeholder-text">SolidWorks CAD Model — Full Braking Assembly</div>
+    
       </div>
     </div>
   </div>
@@ -798,10 +898,1578 @@ footer {
     </div>
   </div>
 </section>
+<div class="proj-end-line"></div>
+</div>
 
-<footer>
-  <span>Kripal Detroja — Project 01 / 11</span>
-  <span style="color:var(--accent);">Braking System Design · BAJA SAE &amp; Metta EV</span>
+<div id="curvic" class="project-block" style="--proj-accent:#1a56db">
+<div class="proj-sep"><span class="proj-num-tag">Project 02</span><span class="proj-title-tag">Parametric Curvic Coupling</span></div>
+<div class="hero">
+  <div class="hero-bg">CURVIC</div>
+  <div class="hero-tag">Project 02 — Parametric Design · IceSL · Lua · Additive Manufacturing</div>
+  <h1>Parametric<br><em>Curvic Coupling</em><br>Generator.</h1>
+  <div class="hero-meta">
+    <div><div class="meta-label">Institution</div><div class="meta-value">Technische Hochschule Deggendorf</div></div>
+    <div><div class="meta-label">Supervisor</div><div class="meta-value">Dr. Prof. Ing. Stefan Scherbarth</div></div>
+    <div><div class="meta-label">Language</div><div class="meta-value">Lua Script · IceSL Slicer</div></div>
+    <div><div class="meta-label">Output</div><div class="meta-value">Concave + Convex halves auto-generated</div></div>
+  </div>
+</div>
+
+<section>
+  <div class="slabel">Overview</div>
+  <h2>Geometry generated<br>by <em>mathematics.</em></h2>
+  <p class="lead">As part of the MSc Mechatronics & Cyber-Physical Systems program at THD, this project goes far beyond standard CAD modelling. A fully parametric Lua script was developed in IceSL — an additive manufacturing slicer — that mathematically generates both halves of a Curvic Coupling from first-principles cone surface geometry. Change any input parameter and the entire 3D model regenerates automatically and correctly.</p>
+  <div class="ov-grid">
+    <div class="ov-card"><div class="ov-num">4</div><div class="ov-lbl">User-defined inputs drive the entire geometry</div></div>
+    <div class="ov-card"><div class="ov-num">2</div><div class="ov-lbl">Coupling halves generated simultaneously — concave + convex</div></div>
+    <div class="ov-card"><div class="ov-num">Lua</div><div class="ov-lbl">Parametric scripting in IceSL slicer environment</div></div>
+    <div class="ov-card"><div class="ov-num">THD</div><div class="ov-lbl">Master's case study, Cyber-Physical Production Systems</div></div>
+  </div>
+  <div class="inno-box">
+    <div class="inno-lbl">What makes this different from normal CAD</div>
+    <div class="inno-text">A typical CAD model is a fixed geometry. This project uses <strong>parametric scripting</strong>: the coupling is described mathematically using cone surface equations and coordinate transformation matrices, then translated into Lua code. Adjust outer diameter, tooth count, pressure angle, or tooth depth — and both coupling halves regenerate correctly every time. This approach mirrors how industrial gear design software operates.</div>
+  </div>
+  
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="slabel">Background</div>
+  <h2>What is a<br><em>Curvic Coupling?</em></h2>
+  <div class="two-col">
+    <div>
+      <p>A Curvic Coupling is a precision face spline used where extreme accuracy, high torque transmission, and self-centering alignment are required simultaneously. The teeth are curved when viewed perpendicular to the coupling axis — generated by a rotating grinding wheel on a pitch cone surface.</p>
+      <p>One half has a <strong>concave</strong> tooth profile (valley-shaped), the other a <strong>convex</strong> profile (hill-shaped). When meshed, they self-centre with micron-level precision and transmit torque through face contact rather than flank contact like standard gears.</p>
+      <p>Industry applications include gas turbine engine shafts, precision CNC machine tool spindles, and aerospace gearbox assemblies — anywhere requiring zero-backlash, high-torque, repeatedly disassembled joints.</p>
+    </div>
+    <div>
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div class="eq-card" style="border-left-color:#4ade80"><div class="eq-name" style="color:#4ade80">Gas Turbine Engines</div><div class="eq-desc">Shaft couplings where precision alignment and high torque are critical under extreme temperature cycles.</div></div>
+        <div class="eq-card" style="border-left-color:#7aa7f5"><div class="eq-name" style="color:#7aa7f5">CNC Machine Tools</div><div class="eq-desc">Spindle indexing and pallet couplings in machining centres — ensures repeatable repositioning within microns.</div></div>
+        <div class="eq-card" style="border-left-color:var(--accent2)"><div class="eq-name">Aerospace & Defence</div><div class="eq-desc">Gearbox and actuator assemblies requiring modular design with precision centering under high load.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="slabel">Design Parameters</div>
+  <h2>Four inputs —<br><em>infinite geometries.</em></h2>
+  <p class="lead">The script accepts four primary user inputs. All remaining geometry is derived mathematically from these values — tooth width, radii, depths, module, addendum, dedendum, and angular positions.</p>
+  <div class="param-grid">
+    <div class="param-card" style="border-color:rgba(232,65,24,0.3)"><div class="param-sym">D<sub style="font-size:.7em">o</sub></div><div class="param-name">Outer Diameter</div><div class="param-desc">Primary sizing parameter. All radii derive from it. Default: 60 mm.</div><span class="badge badge-u">User Defined</span></div>
+    <div class="param-card" style="border-color:rgba(232,65,24,0.3)"><div class="param-sym">Z</div><div class="param-name">Number of Teeth</div><div class="param-desc">Must be even — ensures self-centering mechanism functions correctly. Default: 20.</div><span class="badge badge-u">User Defined</span></div>
+    <div class="param-card" style="border-color:rgba(232,65,24,0.3)"><div class="param-sym">α</div><div class="param-name">Pressure Angle</div><div class="param-desc">Angle between tooth normal force and pitch circle tangent. Industry standard: 30°. Default: 20°.</div><span class="badge badge-u">User Defined</span></div>
+    <div class="param-card" style="border-color:rgba(232,65,24,0.3)"><div class="param-sym">f<sub style="font-size:.7em">h</sub></div><div class="param-name">Whole Depth Coefficient</div><div class="param-desc">Scales tooth depth relative to module. Allows tall or shallow teeth without changing diameter. Default: 50.</div><span class="badge badge-u">User Defined</span></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem">
+    <div class="param-card"><div class="param-sym">D<sub style="font-size:.7em">i</sub></div><div class="param-name">Inner Diameter</div><div class="param-desc">Di = 0.755 × Do</div><span class="badge badge-c">Calculated</span></div>
+    <div class="param-card"><div class="param-sym">W</div><div class="param-name">Tooth Width</div><div class="param-desc">W = (Do − Di) / 2</div><span class="badge badge-c">Calculated</span></div>
+    <div class="param-card"><div class="param-sym">m</div><div class="param-name">Module</div><div class="param-desc">m = Do / Z</div><span class="badge badge-c">Calculated</span></div>
+    <div class="param-card"><div class="param-sym">R<sub style="font-size:.7em">T</sub></div><div class="param-name">Tangency Radius</div><div class="param-desc">RT = (Do − W) / 2</div><span class="badge badge-c">Calculated</span></div>
+    <div class="param-card"><div class="param-sym">h<sub style="font-size:.7em">w</sub></div><div class="param-name">Whole Depth</div><div class="param-desc">hw = (fh / 20) × m</div><span class="badge badge-c">Calculated</span></div>
+    <div class="param-card"><div class="param-sym">R<sub style="font-size:.7em">c</sub></div><div class="param-name">Pitch Cone Radius</div><div class="param-desc">Rc = RT · tan(β/2)</div><span class="badge badge-c">Calculated</span></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="slabel">Mathematical Model</div>
+  <h2>Cone surface geometry &amp;<br><em>coordinate transformation.</em></h2>
+  <p class="lead">The Curvic Coupling tooth profile is not a simple extrusion — it is a surface generated by a rotating conical grinding wheel. Three mathematical steps define this geometry in the script.</p>
+
+  <div class="eq-section">
+    <div class="eq-hdr"><div class="step-num">01</div><div class="step-title">Quadric <em>Cone Surface</em></div></div>
+    <div class="eq-card">
+      <div class="eq-name">General Quadric Surface</div>
+      <div class="eq-f">S = Ax² + By² + Cz² + 2Dxy + 2Eyz + 2Fxz + 2Gx + 2Hy + 2Jz + K = 0</div>
+      <p class="eq-desc">Any quadric surface — sphere, cone, cylinder, paraboloid — can be expressed in this general matrix form. The matrix Q defines the specific shape. For the Curvic Coupling tooth cone, we set specific values and zero out the cross terms.</p>
+    </div>
+    <div class="eq-card">
+      <div class="eq-name">Cone Surface — Simplified (A=B=1, C=−e²)</div>
+      <div class="eq-f">Sgc(x, y, z) = x² + y² − e²·z² = 0 &nbsp;&nbsp; where e = tan(α)</div>
+      <p class="eq-desc">By setting A = B = 1 and C = −e², the general quadric becomes a right circular cone. The parameter e is the tangent of the pressure angle, directly controlling how steep the cone surface is — and therefore the tooth flank geometry.</p>
+      <div class="eq-vars"><span class="var-tag">A = B = 1</span><span class="var-tag">C = −e²</span><span class="var-tag">e = tan(α)</span><span class="var-tag">All cross-terms = 0</span></div>
+    </div>
+    <div class="eq-card">
+      <div class="eq-name">Parametric Form — for 3D Point Generation</div>
+      <div class="eq-f">Spc(t, θ) = [ e·t·cosθ,  e·t·sinθ,  t,  1 ]ᵀ</div>
+      <p class="eq-desc">The parametric form describes every point on the cone surface using t (axial distance) and θ (angular position). This is what the Lua script evaluates to generate actual 3D mesh geometry — sweeping around the cone axis to trace the tooth profile.</p>
+      <div class="eq-vars"><span class="var-tag">t = axial parameter</span><span class="var-tag">θ = angular (0 to 2π)</span></div>
+    </div>
+  </div>
+
+  <div class="eq-section">
+    <div class="eq-hdr"><div class="step-num">02</div><div class="step-title">Coordinate <em>Transformation Matrix</em></div></div>
+    <div class="eq-card">
+      <div class="eq-name">4×4 Homogeneous Transformation Matrix T</div>
+      <div style="display:flex;align-items:center;gap:12px;font-family:var(--font-mono);font-size:13px;overflow-x:auto;margin:1rem 0;padding:1.25rem;background:rgba(26,86,219,0.05);border-radius:8px;border:1px solid rgba(26,86,219,0.15)">
+        <span style="font-size:3rem;color:rgba(255,255,255,0.2);line-height:1;font-weight:100;">[</span>
+        <div style="display:grid;grid-template-columns:repeat(4,50px);gap:.5rem 1.5rem;text-align:center">
+          <span style="color:var(--accent2)">1</span><span style="color:rgba(255,255,255,.2)">0</span><span style="color:rgba(255,255,255,.2)">0</span><span style="color:#7aa7f5">0</span>
+          <span style="color:rgba(255,255,255,.2)">0</span><span style="color:var(--accent2)">1</span><span style="color:rgba(255,255,255,.2)">0</span><span style="color:#7aa7f5">0</span>
+          <span style="color:rgba(255,255,255,.2)">0</span><span style="color:rgba(255,255,255,.2)">0</span><span style="color:var(--accent2)">e</span><span style="color:#7aa7f5">0</span>
+          <span style="color:rgba(255,255,255,.2)">0</span><span style="color:rgba(255,255,255,.2)">0</span><span style="color:rgba(255,255,255,.2)">0</span><span style="color:rgba(255,255,255,.2)">1</span>
+        </div>
+        <span style="font-size:3rem;color:rgba(255,255,255,0.2);line-height:1;font-weight:100;">]</span>
+        <div style="font-size:12px;color:var(--muted);line-height:1.8;min-width:180px">
+          <div style="color:var(--accent2)">Identity in X, Y</div>
+          <div style="color:var(--accent2)">Z scaled by e = tan(α)</div>
+          <div style="color:#7aa7f5">No translation</div>
+        </div>
+      </div>
+      <p class="eq-desc">The transformation matrix places each tooth cone at the correct position and orientation. The Z-axis is scaled by e = tan(α) — this is precisely what creates the conical surface in 3D. Per-tooth rotation (360°/Z × tooth index) is applied separately in the loop.</p>
+    </div>
+    <div class="eq-card">
+      <div class="eq-name">Transformed Surface Equations</div>
+      <div class="eq-f">S'gc = x·(Tᵀ)⁻¹·Q·T⁻¹·xᵀ = 0</div>
+      <div class="eq-f blue" style="margin-top:.5rem">S'pc = T · Spc</div>
+      <p class="eq-desc">Applying T to the cone surface equation places it correctly on the coupling face. The transformed parametric form S'pc is what the Lua renderer evaluates to compute the actual 3D mesh vertices for each individual tooth.</p>
+    </div>
+  </div>
+
+  <div class="eq-section">
+    <div class="eq-hdr"><div class="step-num">03</div><div class="step-title">Grinder Geometry &amp; <em>Tooth Placement</em></div></div>
+    <div class="eq-card">
+      <div class="eq-name">Pitch Cone Circle Radius (tooth curvature)</div>
+      <div class="eq-f">Rc = RT · tan(β/2) &nbsp;&nbsp;|&nbsp;&nbsp; s = RT / cos(β/2)</div>
+      <p class="eq-desc">Rc defines the curvature of the tooth profile — the characteristic curved shape of Curvic Coupling teeth. It derives from the tangency radius and enveloped angle, replicating the geometry generated by the physical grinding wheel used in traditional manufacturing.</p>
+      <div class="eq-vars"><span class="var-tag">RT = tangency radius</span><span class="var-tag">β = enveloped angle</span><span class="var-tag">Rc → tooth curvature</span><span class="var-tag">s = wheel distance</span></div>
+    </div>
+    <div class="eq-card">
+      <div class="eq-name">Angular Tooth Placement — for-loop in Lua</div>
+      <div class="eq-f">θᵢ = (360° / Z) × i &nbsp;&nbsp; for i = 0, 1, 2, ... Z−1</div>
+      <p class="eq-desc">Each tooth is placed at an equal angular interval around the coupling face. In the Lua script this is a for-loop that rotates and places each tooth cone at its correct circumferential position — producing a symmetric ring of Z precision teeth.</p>
+      <div class="eq-vars"><span class="var-tag">i = tooth index</span><span class="var-tag">Z = total tooth count</span><span class="var-tag">θᵢ = placement angle</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="slabel">Implementation</div>
+  <h2>The Lua script<br><em>that generates both halves.</em></h2>
+  <p class="lead">The complete parametric generator uses CSG (Constructive Solid Geometry) operations in IceSL — union, difference, translate, rotate — to build the coupling from mathematical primitives. The key insight: concave half = ring + teeth (union), convex half = ring − teeth (difference).</p>
+  <div class="code-wrap">
+    <div class="code-hdr"><span class="code-fn">AM_GROUP_09_CURVIC_COUPLING.lua</span><span class="code-lang">Lua · IceSL</span></div>
+    <div class="code-body"><pre><span class="cm">-- Primary user inputs (interactive number boxes in IceSL UI)</span>
+<span class="cv">Diameter_o</span> = <span class="cf">ui_numberBox</span>(<span class="cs">"Outer Diameter"</span>, <span class="cn">60</span>)       <span class="cm">-- mm</span>
+<span class="cv">Z</span>          = <span class="cf">ui_numberBox</span>(<span class="cs">"Number of Teeth"</span>, <span class="cn">20</span>)       <span class="cm">-- must be even</span>
+<span class="cv">alpha</span>      = <span class="cf">ui_numberBox</span>(<span class="cs">"Pressure Angle"</span>, <span class="cn">20</span>)        <span class="cm">-- degrees</span>
+<span class="cv">f_h</span>        = <span class="cf">ui_numberBox</span>(<span class="cs">"Whole Depth Coefficient"</span>, <span class="cn">50</span>)
+
+<span class="cm">-- All geometry derived automatically from the 4 inputs above</span>
+<span class="cv">Diameter_i</span> = <span class="cn">0.755</span> * <span class="cv">Diameter_o</span>         <span class="cm">-- inner dia = 75.5% of outer</span>
+<span class="cv">W</span>   = (<span class="cv">Diameter_o</span> - <span class="cv">Diameter_i</span>) / <span class="cn">2</span>     <span class="cm">-- tooth width</span>
+<span class="cv">R_T</span> = (<span class="cv">Diameter_o</span> - <span class="cv">W</span>) / <span class="cn">2</span>              <span class="cm">-- tangency radius</span>
+<span class="cv">m</span>   = <span class="cv">Diameter_o</span> / <span class="cv">Z</span>                    <span class="cm">-- module</span>
+<span class="cv">h_w</span> = (<span class="cv">f_h</span>/<span class="cn">20</span>) * <span class="cv">m</span>                      <span class="cm">-- whole depth</span>
+<span class="cv">e</span>   = math.<span class="cf">tan</span>(math.<span class="cf">rad</span>(<span class="cv">alpha</span>))          <span class="cm">-- tangent of pressure angle</span>
+
+<span class="cm">-- Coordinate transformation matrix (cone surface positioning)</span>
+<span class="cv">T_matrix</span> = { {<span class="cn">1</span>,<span class="cn">0</span>,<span class="cn">0</span>,<span class="cn">0</span>}, {<span class="cn">0</span>,<span class="cn">1</span>,<span class="cn">0</span>,<span class="cn">0</span>}, {<span class="cn">0</span>,<span class="cn">0</span>,<span class="cv">e</span>,<span class="cn">0</span>}, {<span class="cn">0</span>,<span class="cn">0</span>,<span class="cn">0</span>,<span class="cn">1</span>} }
+
+<span class="cm">-- Build annular ring base (outer cylinder minus inner cylinder)</span>
+<span class="ck">function</span> <span class="cf">ring</span>(R_i, R_o, T)
+  <span class="ck">return</span> <span class="cf">difference</span>(<span class="cf">cylinder</span>(R_o, T), <span class="cf">cylinder</span>(R_i, T))
+<span class="ck">end</span>
+
+<span class="cm">-- Build a single tooth using CSG subtraction to carve the curved profile</span>
+<span class="ck">function</span> <span class="cf">tooth</span>(R_tooth, h_w, W, T, alpha, c)
+  <span class="ck">local</span> base = <span class="cf">cylinder</span>(W/<span class="cn">3</span>, h_w - c)
+  <span class="ck">local</span> tip1 = <span class="cf">rotate</span>(<span class="cn">0</span>,<span class="cn">0</span>,<span class="cn">-25</span>)  * <span class="cf">translate</span>(<span class="cn">.5</span>, h_w*<span class="cn">-1</span>, <span class="cn">0</span>) * <span class="cf">cornerbox</span>(...)
+  <span class="ck">local</span> tip2 = <span class="cf">rotate</span>(<span class="cn">0</span>,<span class="cn">0</span>,<span class="cn">-155</span>) * <span class="cf">translate</span>(<span class="cn">.5</span>, h_w*<span class="cn">-1</span>, <span class="cn">0</span>) * <span class="cf">cornerbox</span>(...)
+  <span class="ck">local</span> tip3 = <span class="cf">rotate</span>(<span class="cn">0</span>,<span class="cn">0</span>,<span class="cn">-90</span>)  * <span class="cf">translate</span>(<span class="cn">.5</span>, h_w*<span class="cn">-1</span>, <span class="cn">0</span>) * <span class="cf">cornerbox</span>(...)
+  <span class="ck">local</span> t = <span class="cf">difference</span>(<span class="cf">difference</span>(<span class="cf">difference</span>(base, tip1), tip2), tip3)
+  <span class="ck">local</span> tx, ty, tz = <span class="cf">transform_point</span>(R_tooth, <span class="cn">0</span>, <span class="cn">0</span>, T_matrix)
+  <span class="ck">return</span> <span class="cf">translate</span>(tx*<span class="cn">0.856</span>, ty, tz) * <span class="cf">rotate</span>(<span class="cn">90</span>,<span class="cn">0</span>,<span class="cn">90</span>) * t
+<span class="ck">end</span>
+
+<span class="cm">-- Place Z teeth equally around the ring:  θᵢ = (360/Z) × i</span>
+<span class="ck">function</span> <span class="cf">create_teeth</span>(R_tooth, h_w, W, T, Z, alpha, c)
+  <span class="ck">local</span> teeth = <span class="cf">union</span>{}
+  <span class="ck">for</span> i = <span class="cn">0</span>, Z - <span class="cn">1</span> <span class="ck">do</span>
+    <span class="ck">local</span> angle = (<span class="cn">360</span> / Z) * i      <span class="cm">-- equal angular spacing</span>
+    teeth = <span class="cf">union</span>(teeth, <span class="cf">rotate</span>(<span class="cn">0</span>,<span class="cn">0</span>,angle) * <span class="cf">tooth</span>(R_tooth, h_w, W, T, alpha, c))
+  <span class="ck">end</span>
+  <span class="ck">return</span> teeth
+<span class="ck">end</span>
+
+<span class="cm">-- GENERATE BOTH HALVES from the same teeth model using opposite CSG ops</span>
+<span class="cv">ring_with_teeth_concave</span> = <span class="cf">union</span>(ring_model, teeth_model)       <span class="cm">-- CONCAVE: add teeth</span>
+<span class="cv">ring_with_teeth_convex</span>  = <span class="cf">difference</span>(ring_model, teeth_model1)  <span class="cm">-- CONVEX: subtract teeth</span>
+
+<span class="cf">emit</span>(<span class="cf">rotate</span>(<span class="cn">180</span>,<span class="cn">0</span>,<span class="cn">0</span>) * ring_with_teeth_concave, <span class="cn">0</span>)   <span class="cm">-- output concave part</span>
+<span class="cf">emit</span>(ring_with_teeth_convex, <span class="cn">1</span>)                          <span class="cm">-- output convex part</span></pre></div>
+  </div>
+  <div class="inno-box" style="border-color:rgba(240,165,0,0.3);border-left-color:var(--accent2)">
+    <div class="inno-lbl" style="color:var(--accent2)">The CSG Elegance</div>
+    <div class="inno-text">The concave and convex halves are generated from the <strong>same teeth model</strong> using opposite CSG operations. <strong>Union</strong> adds teeth to the ring — creating concave valleys between. <strong>Difference</strong> subtracts teeth from the ring — creating convex protrusions. One model definition, two precision-matched outputs.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="slabel">Engineering Analysis</div>
+  <h2>Curvic Coupling<br><em>trade-offs.</em></h2>
+  <div class="sw-grid">
+    <div class="sw-card s">
+      <div class="sw-title">Strengths</div>
+      <div class="sw-item"><div class="dot"></div>High torque transmission via face contact load distribution</div>
+      <div class="sw-item"><div class="dot"></div>Self-centering — no external alignment fixtures required</div>
+      <div class="sw-item"><div class="dot"></div>Smooth curved tooth profile reduces noise and vibration</div>
+      <div class="sw-item"><div class="dot"></div>Tolerates minor shaft misalignment through profile flexibility</div>
+      <div class="sw-item"><div class="dot"></div>Compact design for high torque compared to alternatives</div>
+    </div>
+    <div class="sw-card w">
+      <div class="sw-title">Limitations</div>
+      <div class="sw-item"><div class="dot"></div>Centrifugal forces at high speeds limit RPM range</div>
+      <div class="sw-item"><div class="dot"></div>Complex curved profile traditionally requires specialised grinding</div>
+      <div class="sw-item"><div class="dot"></div>Limited commercial availability vs. standard couplings</div>
+      <div class="sw-item"><div class="dot"></div>Tooth wear significantly impacts performance</div>
+      <div class="sw-item"><div class="dot"></div>Higher manufacturing cost due to precision requirements</div>
+    </div>
+  </div>
+  <div class="inno-box" style="border-color:rgba(74,222,128,0.2);border-left-color:#4ade80">
+    <div class="inno-lbl" style="color:#4ade80">Future — Additive Manufacturing Changes Everything</div>
+    <div class="inno-text">Additive manufacturing directly addresses the traditional weaknesses. Complex curved tooth profiles — previously requiring specialised CNC grinding machines — can now be 3D printed directly from parametric scripts like this one. This enables on-demand production, custom dimensions, material exploration, and cost reduction for small-batch aerospace or robotics applications — exactly what this project demonstrates.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="slabel">Output</div>
+  <h2>What the script<br><em>produces.</em></h2>
+  
+  
+  <div style="margin-top:2rem">
+    <div class="slabel" style="margin-bottom:1rem">Tools &amp; Technologies</div>
+    <div class="tech-stack">
+      <span class="tc">IceSL</span><span class="tc">Lua Scripting</span><span class="tc">Parametric CSG Modelling</span>
+      <span class="tc">Cone Surface Mathematics</span><span class="tc">Coordinate Transformation</span>
+      <span class="tc">Additive Manufacturing</span><span class="tc">FFF / FDM Printing</span>
+      <span class="tc">Technische Hochschule Deggendorf</span>
+    </div>
+  </div>
+</section>
+<div class="proj-end-line"></div>
+</div>
+
+<div id="vr" class="project-block" style="--proj-accent:#7c3aed">
+<div class="proj-sep"><span class="proj-num-tag">Project 03</span><span class="proj-title-tag">VR Driver Simulator</span></div>
+<div class="hero">
+  <div class="hero-bg">DRIVER</div>
+  <div class="hero-tag">Project 03 — VR/AR · Unity · Meta Quest 3 · C# · Driver Safety</div>
+  <h1>VR Driver<br><em>Safety</em><br>Simulator.</h1>
+  <div class="hero-meta">
+    <div><div class="meta-label">Platform</div><div class="meta-value">Unity · Meta Quest 3</div></div>
+    <div><div class="meta-label">Hardware</div><div class="meta-value">HORI Steering Wheel + VR Headset</div></div>
+    <div><div class="meta-label">My Role</div><div class="meta-value">UI/UX System + Traffic System Lead</div></div>
+    <div><div class="meta-label">Published</div><div class="meta-value">IEEE-format academic paper, THD 2024</div></div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<section>
+  <div class="slabel">Overview</div>
+  <h2>A full VR city — built<br><em>from scratch</em> in Unity.</h2>
+  <p class="lead">A multi-level VR driving simulator developed in Unity as a team of 6 at Technische Hochschule Deggendorf. The system integrates Meta Quest 3 headsets and a physical steering wheel to immerse drivers in realistic urban environments with AI traffic, animated pedestrians, dynamic weather, and a full gamification system. Published as an IEEE-format academic paper.</p>
+
+  <div class="ov-grid">
+    <div class="ov-card"><div class="ov-num">2</div><div class="ov-lbl">Full city environments — morning & evening with rain</div></div>
+    <div class="ov-card"><div class="ov-num">Meta Q3</div><div class="ov-lbl">Meta Quest 3 VR headset integration with motion tracking</div></div>
+    <div class="ov-card"><div class="ov-num">6</div><div class="ov-lbl">C# MonoBehaviour scripts authored by Kripal for game logic</div></div>
+    <div class="ov-card"><div class="ov-num">IEEE</div><div class="ov-lbl">Published as IEEE-format research paper at THD</div></div>
+  </div>
+
+  <div class="contrib-box">
+    <div class="contrib-lbl">Kripal's Specific Contributions to this Team Project</div>
+    <div class="contrib-text">
+      <strong>1. UI System & Gamification:</strong> Designed and coded the complete game flow — portal-based level transitions, lap timer system (PortalTimer.cs), collision warning UI (PedestrianDetector.cs), Game Over / Next Level / Game Complete screens, and the modular scene loader that switches between levels cleanly.<br><br>
+      <strong>2. Traffic System:</strong> Implemented both the indigenous traffic system (AITrafficCar.cs, AIManager.cs, TrafficLight.cs) which mimics real-time traffic behaviour and traffic light cycles, and integrated the Unity Asset Store traffic system for large-scale environment coverage.
+    </div>
+  </div>
+
+  
+</section>
+
+<div class="divider"></div>
+
+<!-- SYSTEM ARCHITECTURE -->
+<section>
+  <div class="slabel">System Architecture</div>
+  <h2>Six systems — one<br><em>seamless simulator.</em></h2>
+  <p class="lead">The simulator is built from six interconnected subsystems, each developed by a team member. Kripal led the UI/Gamification and Traffic systems.</p>
+
+  <div class="arch-grid">
+    <div class="arch-card mine">
+      <span class="arch-badge mine">Kripal — Lead</span>
+      <div class="arch-title">UI System & Gamification</div>
+      <div class="arch-desc">Portal-based level transitions, lap timer, collision warning UI, Game Over / Next Level / Complete screens. Modular scene loader keeps levels independent.</div>
+    </div>
+    <div class="arch-card mine">
+      <span class="arch-badge mine">Kripal — Lead</span>
+      <div class="arch-title">Traffic System</div>
+      <div class="arch-desc">Indigenous AI traffic system (AITrafficCar.cs, AIManager.cs, TrafficLight.cs) mimicking real traffic + Unity Asset traffic for large-scale coverage.</div>
+    </div>
+    <div class="arch-card team">
+      <span class="arch-badge team">Team</span>
+      <div class="arch-title">Environment Design</div>
+      <div class="arch-desc">Two urban environments with terrain tools, road models, skyboxes, weather, barricades and road props aligned to simulation objectives.</div>
+    </div>
+    <div class="arch-card team">
+      <span class="arch-badge team">Team</span>
+      <div class="arch-title">Car Physics & Controller</div>
+      <div class="arch-desc">Wheel Colliders, suspension tuning, PrometeoCarController extended for HORI steering wheel. Real-time speed dashboard and dynamic headlights.</div>
+    </div>
+    <div class="arch-card team">
+      <span class="arch-badge team">Team</span>
+      <div class="arch-title">Pedestrian AI Behaviour</div>
+      <div class="arch-desc">NavMesh + waypoint-driven pedestrians and cyclists from Mixamo. CanMove flag triggers sudden road crossings to test driver reaction.</div>
+    </div>
+    <div class="arch-card hw">
+      <span class="arch-badge hw">Hardware</span>
+      <div class="arch-title">Meta Quest 3 Integration</div>
+      <div class="arch-desc">Full VR compatibility with motion tracking, gesture inputs, spatial positioning. Performance optimised to maintain high frame rate for comfort.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- LEVELS -->
+<section>
+  <div class="slabel">Game Design</div>
+  <h2>Two levels — progressively<br><em>more challenging.</em></h2>
+  <p class="lead">Each level is fully independent with its own scripts, UI panels, and environment. A modular scene loader handles transitions cleanly without cross-level dependencies.</p>
+
+  <div class="level-grid">
+    <div class="level-card">
+      <div class="level-header">
+        <div class="level-num">Level 01 — Morning Environment</div>
+        <div class="level-title">Controlled Urban Circuit</div>
+      </div>
+      <div class="level-body">
+        <div class="level-feat"><div class="feat-dot"></div>Compact closed-loop road structure for controlled testing</div>
+        <div class="level-feat"><div class="feat-dot"></div>Bright morning skybox — light, fresh daytime atmosphere</div>
+        <div class="level-feat"><div class="feat-dot"></div>Basic pedestrian movements on sidewalks</div>
+        <div class="level-feat"><div class="feat-dot"></div>Lap timer active — Portal1 → Portal2 triggers</div>
+        <div class="level-feat"><div class="feat-dot"></div>Game Over on collision / Next Level on lap completion</div>
+        <div class="level-feat"><div class="feat-dot"></div>Simple barricade configurations to guide driving path</div>
+      </div>
+    </div>
+    <div class="level-card">
+      <div class="level-header">
+        <div class="level-num">Level 02 — Evening + Rain Environment</div>
+        <div class="level-title">Complex Urban Landscape</div>
+      </div>
+      <div class="level-body">
+        <div class="level-feat"><div class="feat-dot"></div>Larger urban map with intersections and dense buildings</div>
+        <div class="level-feat"><div class="feat-dot"></div>Dynamic rain via Unity particle systems — visual challenge</div>
+        <div class="level-feat"><div class="feat-dot"></div>Evening skybox with warm hues — time progression narrative</div>
+        <div class="level-feat"><div class="feat-dot"></div>Sudden pedestrian crossings test driver reaction time</div>
+        <div class="level-feat"><div class="feat-dot"></div>Cyclists with full pedal animations — unpredictable hazards</div>
+        <div class="level-feat"><div class="feat-dot"></div>Portal3 → Portal4 — Game Complete screen on finish</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- UI & GAME LOGIC — Kripal's work in detail -->
+<section>
+  <div class="slabel">Kripal's Contribution — In Depth</div>
+  <h2>The game logic &amp;<br><em>UI system I built.</em></h2>
+  <p class="lead">Every screen the player sees during gameplay — timers, warnings, level transitions, success and failure states — was designed and coded as part of my contribution to this project.</p>
+
+  <!-- Game flow -->
+  <div style="margin-bottom:2rem">
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem">Game flow — portal-based level system</div>
+    <div class="flow-row">
+      <div class="flow-node">Player Drives</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Enters Portal</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">PortalTrigger.cs</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node green">Lap Complete → Next Level</div>
+    </div>
+    <div class="flow-row" style="margin-top:.5rem">
+      <div class="flow-node">Player Drives</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Collision Detected</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">PlayerCollision.cs</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node red">Game Over → Retry</div>
+    </div>
+    <div class="flow-row" style="margin-top:.5rem">
+      <div class="flow-node">Pedestrian Near Car</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">PedestrianDetector.cs</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="border-color:rgba(240,165,0,0.3);color:#fbbf24">⚠ Warning UI Flash</div>
+    </div>
+  </div>
+
+  <div class="script-grid">
+    <div class="script-card">
+      <div class="script-name">GameManager.cs / GameManager-Level2.cs</div>
+      <div class="script-desc">Master game state controller. Handles scene switching, UI state updates, retry logic, and progression to next level. One independent version per level for clean separation.</div>
+    </div>
+    <div class="script-card">
+      <div class="script-name">PortalTimer.cs / PortalTimer-Level2.cs</div>
+      <div class="script-desc">Tracks lap time from entry at Portal1/3 to exit at Portal2/4. Displays real-time elapsed time on the HUD. Results feed into age-based reaction time data analysis.</div>
+    </div>
+    <div class="script-card">
+      <div class="script-name">PortalTrigger.cs / PortalTrigger-Level2.cs</div>
+      <div class="script-desc">Detects when the player's vehicle enters a portal collider. Fires the correct outcome — Game Over screen, Next Level transition, or Game Complete — based on which portal and which level.</div>
+    </div>
+    <div class="script-card">
+      <div class="script-name">PlayerCollision.cs</div>
+      <div class="script-desc">Monitors vehicle collision events across both levels. Detects contact with buildings, props, and pedestrians. Triggers Game Over UI and logs collision events for analysis.</div>
+    </div>
+    <div class="script-card">
+      <div class="script-name">PedestrianDetector.cs</div>
+      <div class="script-desc">Collision warning system — detects pedestrians in the danger zone ahead of the vehicle and activates a warning UI overlay before a collision occurs. Configurable detection radius.</div>
+    </div>
+    <div class="script-card">
+      <div class="script-name">AITrafficCar.cs / AIManager.cs / TrafficLight.cs</div>
+      <div class="script-desc">Indigenous traffic system built from scratch. AI vehicles follow waypoint paths, respect traffic light states, and react to intersections — mimicking real-world traffic behaviour.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RESEARCH APPLICATION -->
+<section>
+  <div class="slabel">Research Application</div>
+  <h2>Beyond a game —<br><em>a research instrument.</em></h2>
+  <p class="lead">The lap timer system built into the simulator enables it to function as experimental equipment for studying driver behaviour across different demographics.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem;margin:2rem 0">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem">
+      <div style="font-size:1.8rem;font-family:var(--font-head);color:var(--accent);margin-bottom:.5rem">Age Groups</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6">Lap time data can be collected across different age groups to produce reaction time vs. age graphs — a quantitative behavioural study.</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem">
+      <div style="font-size:1.8rem;font-family:var(--font-head);color:var(--accent2);margin-bottom:.5rem">Risk-Free</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6">Sudden pedestrian crossings and cyclists test driver reaction to hazards in a completely safe environment — impossible in real-world testing.</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem">
+      <div style="font-size:1.8rem;font-family:var(--font-head);color:var(--gold);margin-bottom:.5rem">Urban Planning</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6">The virtual city can be reconfigured to test different road layouts, traffic light timings, and intersection designs before physical implementation.</div>
+    </div>
+  </div>
+
+  
+  
+</section>
+
+<div class="divider"></div>
+
+<!-- TECH & PAPER -->
+<section>
+  <div class="slabel">Tools, Technology & Publication</div>
+  <h2>Stack &amp; <em>publication.</em></h2>
+
+  <div class="tech-section">
+    <div class="tech-cat">Game Engine & Development</div>
+    <div class="tech-pills">
+      <span class="tp highlight">Unity 3D</span>
+      <span class="tp highlight">C# Scripting</span>
+      <span class="tp">NavMesh</span>
+      <span class="tp">Waypoint Navigation</span>
+      <span class="tp">Unity Canvas UI</span>
+      <span class="tp">Particle Systems</span>
+      <span class="tp">Wheel Colliders</span>
+      <span class="tp">Rigidbody Physics</span>
+    </div>
+    <div class="tech-cat">Hardware & VR</div>
+    <div class="tech-pills">
+      <span class="tp highlight">Meta Quest 3</span>
+      <span class="tp highlight">HORI Steering Wheel</span>
+      <span class="tp">Unity Input Manager</span>
+      <span class="tp">Motion Tracking</span>
+      <span class="tp">Gesture Input</span>
+    </div>
+    <div class="tech-cat">Characters & Assets</div>
+    <div class="tech-pills">
+      <span class="tp">Mixamo (character animations)</span>
+      <span class="tp">Sketchfab</span>
+      <span class="tp">Unity Asset Store</span>
+      <span class="tp">Fantastic City Generator</span>
+      <span class="tp">Prometeo Car Controller</span>
+    </div>
+    <div class="tech-cat">Kripal's Code Contributions</div>
+    <div class="tech-pills">
+      <span class="tp highlight">GameManager.cs</span>
+      <span class="tp highlight">PortalTimer.cs</span>
+      <span class="tp highlight">PortalTrigger.cs</span>
+      <span class="tp highlight">PlayerCollision.cs</span>
+      <span class="tp highlight">PedestrianDetector.cs</span>
+      <span class="tp highlight">AITrafficCar.cs</span>
+      <span class="tp highlight">AIManager.cs</span>
+      <span class="tp highlight">TrafficLight.cs</span>
+    </div>
+  </div>
+
+  <div class="paper-box">
+    <div class="paper-icon">📄</div>
+    <div>
+      <div class="paper-label">Published Academic Paper</div>
+      <div class="paper-title">Case Study of VR AR in Driver Simulator — Group 7, MCS-2</div>
+      <div class="paper-sub">IEEE-format paper · Technische Hochschule Deggendorf · 2024 · 6 authors · Kripal Detroja (1st author)</div>
+    </div>
+  </div>
+</section>
+<div class="proj-end-line"></div>
+</div>
+
+<div id="coupling" class="project-block" style="--proj-accent:#10b981">
+<div class="proj-sep"><span class="proj-num-tag">Project 04</span><span class="proj-title-tag">Coupling Design — Patent</span></div>
+<div class="hero">
+  <div class="hero-bg">PATENT</div>
+  <div class="hero-tag">Project 04 — Industrial R&D · Additive Manufacturing · Patented Design</div>
+  <h1>Coupling Design<br><em>— Patented</em><br>Technology.</h1>
+  <div class="hero-meta">
+    <div><div class="meta-label">Employer</div><div class="meta-value">Monarch Innovation Pvt. Ltd. (NINE09 EV)</div></div>
+    <div><div class="meta-label">Role</div><div class="meta-value">Design Engineer</div></div>
+    <div><div class="meta-label">Period</div><div class="meta-value">Jan 2022 — Feb 2023 · Ahmedabad, India</div></div>
+    <div><div class="meta-label">Status</div><div class="meta-value">Patent Application Filed</div></div>
+  </div>
+</div>
+
+<section>
+  <div class="slabel">Overview</div>
+  <h2>A critical component — designed,<br>prototyped, and <em>patented.</em></h2>
+  <p class="lead">During my tenure as Design Engineer at Monarch Innovation Private Limited — the company behind the NINE09 electric bicycle platform — I contributed to the R&D of a critical coupling component that forms part of the product's modular architecture. The design was developed using additive manufacturing for prototyping and functional validation, and contributed to a patent application currently in process.</p>
+
+  <div class="ov-grid">
+    <div class="ov-card"><div class="ov-num">Patent</div><div class="ov-lbl">Global patent application filed for the modular coupling design concept</div></div>
+    <div class="ov-card"><div class="ov-num">AM</div><div class="ov-lbl">Additive manufacturing used for rapid prototyping and functional validation</div></div>
+    <div class="ov-card"><div class="ov-num">EN 15194</div><div class="ov-lbl">Component designed in compliance with EPAC European e-bike standard</div></div>
+  </div>
+
+  <div class="nda-box">
+    <div class="nda-icon">🔒</div>
+    <div class="nda-text"><strong>Confidentiality Notice:</strong> Specific geometric details, technical drawings, force calculations, and material specifications for this component remain confidential as part of the ongoing patent process and company IP. This page presents only publicly available information about the product platform and the general nature of the engineering work performed.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="slabel">Company Context</div>
+  <h2>About <em>NINE09 EV.</em></h2>
+  <p class="lead">NINE09 is an innovative eMobility brand by Monarch Innovation Pvt. Ltd., headquartered in Ahmedabad, Gujarat. The company designs and manufactures smart electric bicycles and eScooters distributed across Europe, the UK, the US, and India.</p>
+
+  <div class="company-box">
+    <div class="company-icon">🚲</div>
+    <div>
+      <div class="company-label">Employer</div>
+      <div class="company-name">Monarch Innovation Pvt. Ltd. — NINE09 EV Platform</div>
+      <div class="company-sub">Ahmedabad, Gujarat, India · eMobility · CE Certified · Eurobike 2024 Exhibitor · nine09ev.com</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="info-card">
+      <div class="info-label">The Product Platform</div>
+      <div class="info-text">The NINE09 CX01 and CX02 eBikes are built around a modular frame concept — an all-bolted, zero-weld architecture that allows users to replace or swap individual components without specialised tools. This modularity is the core engineering innovation that the coupling design supports.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-label">Why the Coupling Matters</div>
+      <div class="info-text">In a modular eBike frame, every joint must transmit load reliably while remaining user-serviceable. The coupling component I developed connects critical structural members of the frame, enabling the "Designed in India, Assemble Anywhere" philosophy that NINE09 demonstrated at Eurobike 2024.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="slabel">Engineering Work</div>
+  <h2>What the role<br><em>involved.</em></h2>
+
+  <div class="info-card" style="border-left-color:var(--accent2)">
+    <div class="info-label" style="color:var(--accent2)">Design & Prototyping Process</div>
+    <div class="info-text">The coupling component was designed using CAD tools and then prototyped using FFF additive manufacturing. This rapid prototyping approach allowed multiple design iterations to be tested functionally before committing to production tooling — significantly reducing development cost and time at the early startup stage.</div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-label">Compliance Framework</div>
+    <div class="info-text">All components developed for the NINE09 platform are required to comply with EN 15194 — the European standard for electrically power-assisted cycles (EPACs). This standard governs safety, electrical requirements, and performance for eBikes sold in European markets. The coupling design was validated against these requirements as part of the R&D process.</div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-label">Patent Contribution</div>
+    <div class="info-text">The coupling design contributed to NINE09's modular frame patent application, which is currently in the global patent process. NINE09 publicly confirmed at Eurobike 2024 that their modular frame concept's global patent application is in progress — the coupling component forms part of this IP portfolio.</div>
+  </div>
+
+  <div class="ph-text">→ Insert photo of NINE09 CX01/CX02 product (publicly available from nine09ev.com)<br>Specific component images cannot be shown due to IP confidentiality</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="slabel">Skills Demonstrated</div>
+  <h2>What this project<br><em>proves.</em></h2>
+  <div class="pill-grid">
+    <span class="pill green">Industrial R&D</span>
+    <span class="pill green">IP / Patent Process</span>
+    <span class="pill green">FFF Additive Manufacturing</span>
+    <span class="pill green">Design-for-Modularity</span>
+    <span class="pill">EN 15194 Compliance</span>
+    <span class="pill">CAD Design</span>
+    <span class="pill">Prototype Validation</span>
+    <span class="pill">Startup Engineering Environment</span>
+    <span class="pill">Mechanical Joints & Couplings</span>
+    <span class="pill">Load-Bearing Component Design</span>
+  </div>
+</section>
+<div class="proj-end-line"></div>
+</div>
+
+<div id="harness" class="project-block" style="--proj-accent:#1a56db">
+<div class="proj-sep"><span class="proj-num-tag">Project 05</span><span class="proj-title-tag">Wiring Harness Design</span></div>
+<div class="hero">
+  <div class="hero-bg">HARNESS</div>
+  <div class="hero-tag">Project 05 — Electrical Engineering · PCB Integration · eBike Platform</div>
+  <h1>Wiring Harness<br>Design — <em>Electric</em><br>Bicycle.</h1>
+  <div class="hero-meta">
+    <div><div class="meta-label">Employer</div><div class="meta-value">Monarch Innovation Pvt. Ltd. (NINE09 EV)</div></div>
+    <div><div class="meta-label">Role</div><div class="meta-value">Design Engineer</div></div>
+    <div><div class="meta-label">Period</div><div class="meta-value">Jan 2022 — Feb 2023 · Ahmedabad, India</div></div>
+    <div><div class="meta-label">Standard</div><div class="meta-value">EN 15194 (EPAC Directive)</div></div>
+  </div>
+</div>
+
+<section>
+  <div class="slabel">Overview</div>
+  <h2>Every wire — routed,<br>validated, and <em>CE certified.</em></h2>
+  <p class="lead">As Design Engineer at Monarch Innovation Pvt. Ltd., I designed the complete wiring harness architecture for the NINE09 electric bicycle platform. This covered connector routing, PCB integration, and 3D-printed mounting components — all developed to comply with EN 15194, the European standard for electrically power-assisted cycles. The result ships in CE-certified eBikes now sold across Europe.</p>
+
+  <div class="ov-grid">
+    <div class="ov-card"><div class="ov-num">CE</div><div class="ov-lbl">All NINE09 eBikes are CE certified — harness design compliant</div></div>
+    <div class="ov-card"><div class="ov-num">EN 15194</div><div class="ov-lbl">European EPAC standard governing electrical safety and performance</div></div>
+    <div class="ov-card"><div class="ov-num">PCB + AM</div><div class="ov-lbl">PCB integration with 3D-printed mounting brackets for harness routing</div></div>
+  </div>
+
+  <div class="nda-box">
+    <div class="nda-icon">🔒</div>
+    <div class="nda-text"><strong>Confidentiality Notice:</strong> Specific wiring diagrams, connector pinouts, PCB layouts, and proprietary routing details remain confidential company IP. This page describes the general scope and engineering skills applied, using only publicly available product information from nine09ev.com.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="slabel">Company & Product Context</div>
+  <h2>The <em>NINE09</em> platform<br>this work supports.</h2>
+
+  <div class="company-box">
+    <div class="company-icon">⚡</div>
+    <div>
+      <div class="company-label">Employer</div>
+      <div class="company-name">Monarch Innovation Pvt. Ltd. — NINE09 EV</div>
+      <div class="company-sub">Ahmedabad, Gujarat · Smart eBikes · CE Certified · Eurobike 2024 Exhibitor · Distributed across EU / UK / US / India</div>
+    </div>
+  </div>
+
+  <p style="color:rgba(255,255,255,0.6);font-size:15px;line-height:1.8;margin-bottom:1.5rem">The NINE09 CX01 and CX02 eBikes are smart connected bicycles featuring a 4.3" LCD touchscreen, swappable battery system, GPS anti-theft, integrated lighting, and app connectivity (NINE09 Connect — available on Android and iOS). Every one of these features depends on a precisely designed wiring harness to integrate the electrical system reliably within the modular frame.</p>
+
+  <div class="system-grid">
+    <div class="sys-card highlight">
+      <div class="sys-icon">🖥️</div>
+      <div class="sys-title">4.3" LCD Touchscreen Display</div>
+      <div class="sys-desc">Waterproof (IPX5/IP67) display showing speed, battery level, assist mode, distance. Required dedicated power and data routing.</div>
+    </div>
+    <div class="sys-card highlight">
+      <div class="sys-icon">🔋</div>
+      <div class="sys-title">Swappable Battery System</div>
+      <div class="sys-desc">Removable battery in protective aluminium casing. Harness must accommodate hot-swap connection without interrupting control systems.</div>
+    </div>
+    <div class="sys-card highlight">
+      <div class="sys-icon">💡</div>
+      <div class="sys-title">Integrated Lighting</div>
+      <div class="sys-desc">Front and rear lights fully integrated into the frame — not clip-on. Required embedded cabling within the modular frame structure.</div>
+    </div>
+    <div class="sys-card highlight">
+      <div class="sys-icon">📡</div>
+      <div class="sys-title">GPS + App Connectivity</div>
+      <div class="sys-desc">Built-in GPS for real-time tracking and anti-theft via NINE09 Connect app. Bluetooth/WiFi module integration with main controller.</div>
+    </div>
+    <div class="sys-card">
+      <div class="sys-icon">⚙️</div>
+      <div class="sys-title">Motor Controller & Sensors</div>
+      <div class="sys-desc">Mid-drive or hub motor with torque and cadence sensors. Harness routes motor power and sensor signals cleanly to the controller.</div>
+    </div>
+    <div class="sys-card">
+      <div class="sys-icon">🛑</div>
+      <div class="sys-title">Brake Cutoff System</div>
+      <div class="sys-desc">EN 15194 requires motor cutoff on brake engagement. Brake lever sensors integrated into the harness for safety compliance.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="slabel">Engineering Work</div>
+  <h2>What the harness<br><em>design involved.</em></h2>
+
+  <div class="info-card">
+    <div class="info-label">Harness Architecture & Connector Routing</div>
+    <div class="info-text">Designed the complete wiring harness layout — determining cable runs, connector types, branch points, and routing paths within the modular frame. Special attention was paid to strain relief, bend radius, vibration tolerance, and water ingress protection to ensure reliability in real-world riding conditions.</div>
+  </div>
+
+  <div class="info-card" style="border-left-color:var(--accent2)">
+    <div class="info-label" style="color:var(--accent2)">PCB Integration</div>
+    <div class="info-text">The harness integrates with a central PCB that manages motor control, display, lighting, GPS, and app communication. Connector pinout, signal integrity, and power distribution were coordinated between the harness design and the PCB layout to ensure correct function and EN 15194 electrical safety compliance.</div>
+  </div>
+
+  <div class="info-card" style="border-left-color:var(--green)">
+    <div class="info-label" style="color:var(--green)">3D-Printed Mounting Components</div>
+    <div class="info-text">Custom FFF-printed brackets and clips were designed to route and secure the harness within the frame. This additive manufacturing approach allowed mounting geometry to be iterated rapidly and tailored precisely to the modular frame architecture — without the tooling cost of injection moulded parts at the development stage.</div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-label">EN 15194 Compliance</div>
+    <div class="info-text">EN 15194 governs the electrical requirements for EPAC bicycles sold in European markets — including motor cutoff on braking, maximum assisted speed (25 km/h), maximum continuous rated power (250W), battery safety requirements, and connector safety. The harness design was developed and validated against these requirements as the basis for the CE certification that NINE09 products carry.</div>
+  </div>
+
+  <div class="ph-text">→ Insert photo of NINE09 CX01/CX02 product (publicly available from nine09ev.com)<br>Harness schematics cannot be shown due to IP confidentiality</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="slabel">Skills Demonstrated</div>
+  <h2>What this project<br><em>proves.</em></h2>
+  <div class="pill-grid">
+    <span class="pill blue">Wiring Harness Design</span>
+    <span class="pill blue">PCB Integration</span>
+    <span class="pill blue">EN 15194 Compliance</span>
+    <span class="pill blue">CE Certification Process</span>
+    <span class="pill">Connector Routing</span>
+    <span class="pill">FFF Additive Manufacturing</span>
+    <span class="pill">Electrical Safety Standards</span>
+    <span class="pill">EV Powertrain Integration</span>
+    <span class="pill">Modular System Design</span>
+    <span class="pill">Design-for-Assembly</span>
+    <span class="pill">Startup R&D Environment</span>
+  </div>
+</section>
+<div class="proj-end-line"></div>
+</div>
+
+<div id="additive" class="project-block" style="--proj-accent:#e84118">
+<div class="proj-sep"><span class="proj-num-tag">Project 06</span><span class="proj-title-tag">Additive Components</span></div>
+<div class="hero">
+  <div class="hero-bg">ADDITIVE</div>
+  <div class="hero-tag">Project 06 — Additive Manufacturing · FFF · Force Validation · EN 15194</div>
+  <h1>Additive Manufactured<br><em>Components</em> —<br>Nine09 EV.</h1>
+  <div class="hero-meta">
+    <div><div class="meta-label">Employer</div><div class="meta-value">Monarch Innovation Pvt. Ltd. (NINE09 EV)</div></div>
+    <div><div class="meta-label">Role</div><div class="meta-value">Design Engineer</div></div>
+    <div><div class="meta-label">Period</div><div class="meta-value">Jan 2022 — Feb 2023 · Ahmedabad, India</div></div>
+    <div><div class="meta-label">Method</div><div class="meta-value">FFF / FDM Additive Manufacturing</div></div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<section>
+  <div class="slabel">Overview</div>
+  <h2>Functional components —<br>designed, <em>validated</em>, printed.</h2>
+  <p class="lead">During my role as Design Engineer at Monarch Innovation Pvt. Ltd., I designed and manufactured customised functional components for the NINE09 electric bicycle platform using FFF (Fused Filament Fabrication) additive manufacturing. This work included force and stress validation, compliance with EN 15194, and the development of manufacturing fixtures — all part of NINE09's rapid prototyping pipeline that produced 36 prototypes over 4 years of R&D.</p>
+
+  <div class="ov-grid">
+    <div class="ov-card"><div class="ov-num">FFF</div><div class="ov-lbl">Fused Filament Fabrication — primary manufacturing method</div></div>
+    <div class="ov-card"><div class="ov-num">36</div><div class="ov-lbl">Prototypes developed by NINE09 over 4 years — this work contributed</div></div>
+    <div class="ov-card"><div class="ov-num">EN 15194</div><div class="ov-lbl">European EPAC standard — all components designed for compliance</div></div>
+    <div class="ov-card"><div class="ov-num">CE ✓</div><div class="ov-lbl">Final products carry CE certification for European markets</div></div>
+  </div>
+
+  <div class="nda-box">
+    <div class="nda-icon">🔒</div>
+    <div class="nda-text"><strong>Confidentiality Notice:</strong> Specific component geometries, dimensions, material grades, CAD files, and stress analysis results remain confidential company IP. This page presents only publicly available product context and the general engineering methodology applied.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WHAT IS A BARREL BOLT -->
+<section>
+  <div class="slabel">Component Context</div>
+  <h2>Barrel bolts — engineered<br>for a <em>modular frame.</em></h2>
+  <p class="lead">Barrel bolts (also called barrel nuts or cross-dowels) are cylindrical threaded fasteners used in frame joints where a conventional nut cannot be accessed from the outside. In NINE09's all-bolted, zero-weld modular frame, these are load-critical joints — they must transmit structural forces reliably while remaining user-serviceable without specialised tools.</p>
+
+  <div class="two-col">
+    <div class="feat-card">
+      <div class="feat-icon">⚙️</div>
+      <div class="feat-title">What a Barrel Bolt Does</div>
+      <div class="feat-desc">A barrel bolt is inserted perpendicular into a cylindrical pocket in a frame member. A bolt passes through the mating part and threads into it — creating a strong, hidden joint that can be assembled and disassembled repeatedly without damaging the structure.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔩</div>
+      <div class="feat-title">Why It Matters in a Modular eBike</div>
+      <div class="feat-desc">NINE09's "Designed in India, Assemble Anywhere" philosophy requires joints that are strong enough to pass EN 15194 structural requirements, yet simple enough for a user or local technician to service without specialist equipment. The barrel bolt is a key enabler of this.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🖨️</div>
+      <div class="feat-title">Why 3D Print Them?</div>
+      <div class="feat-desc">At the prototype and early validation stage, 3D-printed barrel bolts allow rapid iteration of geometry, thread engagement depth, and pocket dimensions before committing to CNC machined or cast production parts — saving significant tooling cost and lead time.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📐</div>
+      <div class="feat-title">Engineering Challenge</div>
+      <div class="feat-desc">A 3D-printed functional fastener under structural load is non-trivial. Layer orientation, infill density, thread geometry, and material selection all affect tensile and shear performance. Force and stress validation was essential before use in load-bearing frame joints.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- NINE09 CONTEXT -->
+<section>
+  <div class="slabel">Product Platform Context</div>
+  <h2>Part of a <em>36-prototype</em><br>development journey.</h2>
+
+  <div class="proto-stat">
+    <div class="proto-num">36</div>
+    <div class="proto-text">NINE09 publicly states that <strong>36 prototypes</strong> were developed over 4 years before reaching their final production eBike design. The additive manufactured components designed during my tenure were part of this rigorous iterative development process — where each prototype refined the modular frame, fastening system, and electrical integration.</div>
+  </div>
+
+  <div class="context-box">
+    <div class="context-label">The Modular Frame Philosophy — Publicly Stated by NINE09</div>
+    <div class="info-text" style="color:rgba(255,255,255,0.7);font-size:15px;line-height:1.75">NINE09's CX01 and CX02 eBikes use an all-bolted, zero-weld modular frame — meaning every structural joint relies on fasteners rather than welding. This enables the "Right to Repair" philosophy and allows users to replace individual frame sections without scrapping the whole bicycle. The customised barrel bolt components I designed are a direct enabler of this modular architecture.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ENGINEERING PROCESS -->
+<section>
+  <div class="slabel">Engineering Process</div>
+  <h2>Design → Validate →<br><em>Print → Test.</em></h2>
+  <p class="lead">The development process for functional additive manufactured components follows a rigorous engineering workflow — not simply printing off-the-shelf parts.</p>
+
+  <div class="process-list">
+    <div class="process-step">
+      <div class="p-num">01</div>
+      <div class="p-body">
+        <div class="p-title">Requirements Definition</div>
+        <div class="p-desc">Defined load requirements for the barrel bolt based on the frame joint location, rider weight, dynamic loads from road surfaces, and EN 15194 structural test requirements. This determined the minimum tensile and shear strength targets the printed component must achieve.</div>
+      </div>
+    </div>
+    <div class="process-step">
+      <div class="p-num">02</div>
+      <div class="p-body">
+        <div class="p-title">Geometry Design in CAD</div>
+        <div class="p-desc">Designed the customised barrel bolt geometry in CAD — optimising thread engagement length, cylindrical body dimensions, and pocket interface to maximise load transfer while fitting the available envelope within the modular frame member.</div>
+      </div>
+    </div>
+    <div class="process-step">
+      <div class="p-num">03</div>
+      <div class="p-body">
+        <div class="p-title">Force & Stress Validation</div>
+        <div class="p-desc">Performed analytical force calculations and stress analysis to validate that the designed geometry meets the load requirements. This includes thread pullout force, bearing stress at the bolt head, and shear stress across the barrel body — verifying the component will not fail under the design loads.</div>
+      </div>
+    </div>
+    <div class="process-step">
+      <div class="p-num">04</div>
+      <div class="p-body">
+        <div class="p-title">FFF Manufacturing — Print Orientation & Parameters</div>
+        <div class="p-desc">Printed using FFF technology with careful selection of print orientation (maximising layer adhesion in the direction of primary load), infill density, and material. EN 15194 compliance required that material and process parameters be documented as part of the validation record.</div>
+      </div>
+    </div>
+    <div class="process-step">
+      <div class="p-num">05</div>
+      <div class="p-body">
+        <div class="p-title">Manufacturing Fixtures — Adhesive-Based Frame Assembly</div>
+        <div class="p-desc">Beyond the barrel bolts themselves, developed 3D-printed manufacturing fixtures for the bicycle frame assembly process. These fixtures use adhesive-based joining methods to position and hold frame components accurately during assembly — improving repeatability and quality in the production workflow.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PHOTOS & SKILLS -->
+<section>
+  <div class="slabel">Output</div>
+  <h2>From CAD to<br><em>functional prototype.</em></h2>
+
+  </div>
+    <div class="ph-text">→ Insert photo of NINE09 CX01/CX02 modular frame joint<br>(publicly available from nine09ev.com)</div></div>
+  </div>
+
+  <div class="slabel" style="margin-top:2rem;margin-bottom:1rem">Skills Demonstrated</div>
+  <div class="pill-grid">
+    <span class="pill red">FFF Additive Manufacturing</span>
+    <span class="pill red">Functional Prototype Design</span>
+    <span class="pill red">Force & Stress Validation</span>
+    <span class="pill red">Design-for-AM</span>
+    <span class="pill">EN 15194 Compliance</span>
+    <span class="pill">Thread & Fastener Engineering</span>
+    <span class="pill">Manufacturing Fixture Design</span>
+    <span class="pill">Adhesive-Based Assembly</span>
+    <span class="pill">CAD Modelling</span>
+    <span class="pill">Rapid Prototyping</span>
+    <span class="pill">Iterative Development</span>
+    <span class="pill">Modular Product Architecture</span>
+  </div>
+</section>
+<div class="proj-end-line"></div>
+</div>
+
+<div id="strain" class="project-block" style="--proj-accent:#f0a500">
+<div class="proj-sep"><span class="proj-num-tag">Project 07</span><span class="proj-title-tag">Strain Gauge Simulation</span></div>
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg-text">STRAIN</div>
+  <div class="hero-tag">Project 02 — Mechatronic System Simulation</div>
+  <h1>Semiconductor<br>Strain Gauge<br><em>Simulation.</em></h1>
+  <div class="hero-meta">
+    <div class="meta-item"><span class="meta-label">Institution</span><span class="meta-value">Technische Hochschule Deggendorf</span></div>
+    <div class="meta-item"><span class="meta-label">Course</span><span class="meta-value">MSc Mechatronics — Case Study Simulation</span></div>
+    <div class="meta-item"><span class="meta-label">Tool</span><span class="meta-value">MATLAB (Animated Simulation)</span></div>
+    <div class="meta-item"><span class="meta-label">Sensor Series</span><span class="meta-value">SGD Series — 120 Ω Base</span></div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<section>
+  <div class="section-label">Overview</div>
+  <h2>Sensing the <em>Invisible.</em></h2>
+  <p class="lead">Developed a fully animated MATLAB simulation demonstrating the working principles of a semiconductor strain gauge from first principles. The simulation models how mechanical strain applied to an SGD-series gauge dynamically changes its electrical resistance and output voltage — visualising the complete sensing chain in real time.</p>
+
+  <div class="overview-grid">
+    <div class="overview-card">
+      <div class="ov-number">120 Ω</div>
+      <div class="ov-label">Base resistance of SGD-series semiconductor gauge</div>
+    </div>
+    <div class="overview-card">
+      <div class="ov-number">GF = 2</div>
+      <div class="ov-label">Gauge factor — sensitivity of resistance to strain</div>
+    </div>
+    <div class="overview-card">
+      <div class="ov-number">±2%</div>
+      <div class="ov-label">Strain range simulated (−0.02 to +0.02)</div>
+    </div>
+    <div class="overview-card">
+      <div class="ov-number">5 V</div>
+      <div class="ov-label">DC supply voltage in the simulated circuit</div>
+    </div>
+  </div>
+
+  
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- INTERACTIVE SIMULATION -->
+<section>
+  <div class="section-label">Live Demo</div>
+  <h2>Interactive <em>Strain Simulator.</em></h2>
+  <p class="lead">This is a browser recreation of the MATLAB simulation — the same physics and equations, running live. Adjust the strain to see how resistance and output voltage respond in real time.</p>
+
+  <div class="sim-wrap">
+    <div class="sim-title">SGD Series — Semiconductor Strain Gauge · Live Model</div>
+
+    <!-- Circuit Canvas -->
+    <div class="sim-canvas">
+      <canvas id="gaugeCanvas" style="width:100%;height:100%;"></canvas>
+    </div>
+
+    <!-- Strain Slider -->
+    <div class="sim-controls">
+      <span class="sim-label">Applied Strain (ε)</span>
+      <input type="range" class="sim-slider" id="strainSlider" min="-200" max="200" value="0" step="1">
+      <span class="sim-readout" id="strainReadout">ε = 0.000</span>
+    </div>
+
+    <!-- Live Outputs -->
+    <div class="sim-outputs">
+      <div class="sim-out-card">
+        <div class="sim-out-label">Gauge Resistance (Rg)</div>
+        <div class="sim-out-value" id="outR">120.0<span class="sim-out-unit">Ω</span></div>
+      </div>
+      <div class="sim-out-card">
+        <div class="sim-out-label">Output Voltage (Vout)</div>
+        <div class="sim-out-value" id="outV">5.00<span class="sim-out-unit">V</span></div>
+      </div>
+      <div class="sim-out-card">
+        <div class="sim-out-label">ΔR / R₀</div>
+        <div class="sim-out-value" id="outDR">0.000<span class="sim-out-unit">%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PHYSICS & EQUATIONS -->
+<section>
+  <div class="section-label">Physics & Equations</div>
+  <h2>The Sensing <em>Chain.</em></h2>
+  <p class="lead">A semiconductor strain gauge converts mechanical deformation into an electrical signal through a precise chain of physical relationships. Below is the complete equation chain implemented in the MATLAB simulation.</p>
+
+  <!-- STEP 1 -->
+  <div class="eq-section">
+    <div class="eq-step-header">
+      <div class="step-num teal">01</div>
+      <div class="step-title">Strain &amp; <em>Resistance Change</em></div>
+    </div>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 700 180" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <path d="M1,1 L7,4 L1,7" fill="none" stroke="#00c9a7" stroke-width="1.5" stroke-linecap="round"/>
+          </marker>
+          <marker id="arrF" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <path d="M1,1 L7,4 L1,7" fill="none" stroke="#f0a500" stroke-width="1.5" stroke-linecap="round"/>
+          </marker>
+        </defs>
+        <!-- Gauge body unstrained -->
+        <rect x="80" y="70" width="120" height="40" rx="6" fill="rgba(26,86,219,0.15)" stroke="rgba(26,86,219,0.4)" stroke-width="1.5"/>
+        <text x="140" y="95" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="DM Mono,monospace" font-size="11">R₀ = 120 Ω</text>
+        <text x="140" y="60" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-family="DM Mono,monospace" font-size="10">Unstrained</text>
+        <!-- Force arrows -->
+        <line x1="50" y1="90" x2="78" y2="90" stroke="#f0a500" stroke-width="2" marker-end="url(#arrF)"/>
+        <line x1="230" y1="90" x2="202" y2="90" stroke="#f0a500" stroke-width="2" marker-end="url(#arrF)"/>
+        <text x="30" y="85" fill="#f0a500" font-family="DM Mono,monospace" font-size="10" text-anchor="middle">F</text>
+        <text x="248" y="85" fill="#f0a500" font-family="DM Mono,monospace" font-size="10" text-anchor="middle">F</text>
+        <!-- Arrow to strained -->
+        <line x1="270" y1="90" x2="330" y2="90" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="300" y="82" fill="rgba(255,255,255,0.3)" font-family="DM Mono,monospace" font-size="10" text-anchor="middle">strain ε</text>
+        <!-- Strained gauge (wider) -->
+        <rect x="340" y="78" width="150" height="24" rx="6" fill="rgba(0,201,167,0.12)" stroke="rgba(0,201,167,0.4)" stroke-width="1.5"/>
+        <text x="415" y="95" text-anchor="middle" fill="#00c9a7" font-family="DM Mono,monospace" font-size="11">Rg = R₀(1 + GF·ε)</text>
+        <text x="415" y="66" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-family="DM Mono,monospace" font-size="10">Strained</text>
+        <!-- Output arrow -->
+        <line x1="492" y1="90" x2="550" y2="90" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- Voltage box -->
+        <rect x="552" y="72" width="110" height="36" rx="6" fill="rgba(240,165,0,0.1)" stroke="rgba(240,165,0,0.3)" stroke-width="1.5"/>
+        <text x="607" y="95" text-anchor="middle" fill="#f0a500" font-family="DM Mono,monospace" font-size="11">Vout changes</text>
+        <!-- Labels -->
+        <text x="350" y="155" fill="rgba(255,255,255,0.25)" font-family="DM Mono,monospace" font-size="11" text-anchor="middle">Resistance changes proportionally to strain — this is the core sensing mechanism</text>
+      </svg>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Gauge Resistance vs. Strain (Core Equation)</div>
+      <div class="eq-formula">Rg = R₀ × (1 + GF × ε)</div>
+      <p class="eq-desc">The resistance of the semiconductor gauge changes linearly with applied strain. The Gauge Factor (GF) is the sensitivity coefficient — for semiconductor gauges it is typically 2, much higher than metal foil gauges (GF ≈ 2 vs. 2 for semiconductors, but semiconductor types achieve far greater sensitivity at small strains due to the piezoresistive effect in silicon).</p>
+      <div class="eq-vars">
+        <span class="var-tag">R₀ = 120 Ω (base resistance)</span>
+        <span class="var-tag">GF = 2 (gauge factor)</span>
+        <span class="var-tag">ε = strain (−0.02 to +0.02)</span>
+        <span class="var-tag">Rg = dynamic resistance (Ω)</span>
+      </div>
+      <div class="eq-result"><strong>Example:</strong> At ε = +0.02 → Rg = 120 × (1 + 2 × 0.02) = 124.8 Ω</div>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Strain Range — Simulation Parameters</div>
+      <div class="eq-formula">ε ∈ linspace(−0.02, +0.02, 100)</div>
+      <p class="eq-desc">The simulation steps through 100 evenly-spaced strain values from −2% compression to +2% tension. At each step, resistance and voltage are computed and displayed in an animated frame, giving a dynamic view of sensor behaviour across its full operating range.</p>
+      <div class="eq-vars">
+        <span class="var-tag">Min strain: −0.02 (−2%, compression)</span>
+        <span class="var-tag">Max strain: +0.02 (+2%, tension)</span>
+        <span class="var-tag">100 simulation steps</span>
+        <span class="var-tag">Time step: 0.05 s/frame</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="eq-section">
+    <div class="eq-step-header">
+      <div class="step-num teal">02</div>
+      <div class="step-title">Output Voltage &amp; <em>Signal Chain</em></div>
+    </div>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 700 160" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <path d="M1,1 L7,4 L1,7" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+          </marker>
+        </defs>
+        <!-- DC Supply -->
+        <rect x="30" y="55" width="100" height="50" rx="8" fill="rgba(240,165,0,0.1)" stroke="rgba(240,165,0,0.3)" stroke-width="1.5"/>
+        <text x="80" y="78" text-anchor="middle" fill="#f0a500" font-family="DM Mono,monospace" font-size="11">DC Supply</text>
+        <text x="80" y="95" text-anchor="middle" fill="#f0a500" font-family="DM Mono,monospace" font-size="11">Vs = 5V</text>
+        <!-- Wire -->
+        <line x1="132" y1="80" x2="180" y2="80" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <!-- Strain Gauge -->
+        <rect x="182" y="55" width="130" height="50" rx="8" fill="rgba(232,65,24,0.1)" stroke="rgba(232,65,24,0.35)" stroke-width="1.5"/>
+        <text x="247" y="76" text-anchor="middle" fill="rgba(232,65,24,0.9)" font-family="DM Mono,monospace" font-size="11">Strain Gauge</text>
+        <text x="247" y="93" text-anchor="middle" fill="rgba(232,65,24,0.7)" font-family="DM Mono,monospace" font-size="11">Rg (variable)</text>
+        <!-- Wire -->
+        <line x1="314" y1="80" x2="362" y2="80" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <!-- Resistance box -->
+        <rect x="364" y="55" width="110" height="50" rx="8" fill="rgba(26,86,219,0.1)" stroke="rgba(26,86,219,0.3)" stroke-width="1.5"/>
+        <text x="419" y="76" text-anchor="middle" fill="#7aa7f5" font-family="DM Mono,monospace" font-size="11">Resistance</text>
+        <text x="419" y="93" text-anchor="middle" fill="#7aa7f5" font-family="DM Mono,monospace" font-size="11">R₀ = 120 Ω</text>
+        <!-- Wire -->
+        <line x1="476" y1="80" x2="524" y2="80" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <!-- Voltmeter -->
+        <circle cx="567" cy="80" r="34" fill="rgba(0,201,167,0.08)" stroke="rgba(0,201,167,0.3)" stroke-width="1.5"/>
+        <text x="567" y="76" text-anchor="middle" fill="#00c9a7" font-family="DM Mono,monospace" font-size="10">Vout</text>
+        <text x="567" y="92" text-anchor="middle" fill="#00c9a7" font-family="DM Mono,monospace" font-size="10">meter</text>
+        <!-- Labels below -->
+        <text x="80" y="135" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-family="DM Mono,monospace" font-size="10">Source</text>
+        <text x="247" y="135" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-family="DM Mono,monospace" font-size="10">Sensing element</text>
+        <text x="419" y="135" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-family="DM Mono,monospace" font-size="10">Fixed ref.</text>
+        <text x="567" y="135" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-family="DM Mono,monospace" font-size="10">Output</text>
+      </svg>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Output Voltage Calculation</div>
+      <div class="eq-formula">Vout = (Vs / R₀) × Rg</div>
+      <p class="eq-desc">In the simulated circuit, the supply voltage is applied across the fixed base resistance and the strain gauge in series. The output voltage scales proportionally with the gauge resistance. This is a simplified single-element circuit — in real applications, a Wheatstone bridge configuration amplifies sensitivity significantly by comparing the strained gauge against three fixed reference resistors.</p>
+      <div class="eq-vars">
+        <span class="var-tag">Vs = 5 V (supply voltage)</span>
+        <span class="var-tag">R₀ = 120 Ω (fixed reference)</span>
+        <span class="var-tag">Rg = variable gauge resistance</span>
+      </div>
+      <div class="eq-result"><strong>Example:</strong> At ε = +0.02 → Rg = 124.8 Ω → Vout = (5/120) × 124.8 = 5.2 V</div>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Gauge Length Under Strain</div>
+      <div class="eq-formula">L(t) = L₀ + 0.2 × F(t)</div>
+      <p class="eq-desc">In the animation, the physical length of the gauge element is rendered dynamically to visually show the deformation. As force increases, the gauge body stretches visually — providing an intuitive spatial understanding of what strain physically means in the context of a sensing element with base length 15 mm and width 10 mm.</p>
+      <div class="eq-vars">
+        <span class="var-tag">L₀ = 15 mm (base gauge length)</span>
+        <span class="var-tag">Width = 10 mm</span>
+        <span class="var-tag">Force range: −10 to +10 (arbitrary units)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="eq-section">
+    <div class="eq-step-header">
+      <div class="step-num teal">03</div>
+      <div class="step-title">Wheatstone Bridge — <em>Real-World Extension</em></div>
+    </div>
+
+    <div class="eq-card">
+      <div class="eq-name">Wheatstone Bridge Output Voltage</div>
+      <div class="eq-formula">Vbridge = Vs × [ Rg/(R₀+Rg) − R₀/(R₀+R₀) ]</div>
+      <p class="eq-desc">In real sensor applications, a single gauge has very limited output — often millivolts per volt of supply. The standard solution is the Wheatstone bridge, which adds three fixed resistors to form a balanced bridge circuit. Any imbalance caused by a change in Rg produces a differential output voltage that is much easier to amplify and measure accurately. The simulation illustrates the single-gauge principle; a full Wheatstone bridge would be the next implementation step.</p>
+      <div class="eq-vars">
+        <span class="var-tag">3 fixed resistors = R₀ = 120 Ω each</span>
+        <span class="var-tag">1 active gauge = Rg (variable)</span>
+        <span class="var-tag">Bridge output ≈ Vs × GF × ε / 4</span>
+      </div>
+      <div class="eq-result"><strong>Insight:</strong> Bridge output at ε = 0.02 → ≈ 5 × 2 × 0.02 / 4 = 0.05 V (50 mV) — amplifiable to useful signal levels</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MATLAB CODE HIGHLIGHT -->
+<section>
+  <div class="section-label">Implementation</div>
+  <h2>MATLAB <em>Simulation Code.</em></h2>
+  <p class="lead">Written entirely in MATLAB, the simulation uses animated subplots to show the physical gauge deformation alongside the real-time resistance vs. strain characteristic curve. Key parameters from the SGD datasheet are used as inputs.</p>
+
+  <div class="code-label">Simulation Parameters — SGD Series Gauge</div>
+  <div class="code-block"><pre><span class="c-comment">% Simulation Parameters of SGD series — 120 Ω base resistance</span>
+<span class="c-keyword">resistanceBase</span> = <span class="c-number">120</span>;    <span class="c-comment">% Base resistance in ohms</span>
+<span class="c-keyword">gaugeFactor</span>    = <span class="c-number">2</span>;      <span class="c-comment">% Gauge factor (piezoresistive sensitivity)</span>
+<span class="c-keyword">voltageSupply</span>  = <span class="c-number">5</span>;      <span class="c-comment">% Supply voltage in volts</span>
+<span class="c-keyword">gaugeBaseLength</span>= <span class="c-number">15</span>;     <span class="c-comment">% Base length of the strain gauge (mm)</span>
+<span class="c-keyword">gaugeWidth</span>     = <span class="c-number">10</span>;     <span class="c-comment">% Width of the strain gauge (mm)</span>
+
+<span class="c-comment">% Strain and Resistance for Graph</span>
+strain = <span class="c-keyword">linspace</span>(<span class="c-number">-0.02</span>, <span class="c-number">0.02</span>, <span class="c-number">100</span>);          <span class="c-comment">% Strain −2% to +2%</span>
+Rg     = resistanceBase * (<span class="c-number">1</span> + gaugeFactor .* strain); <span class="c-comment">% Rg vs strain curve</span></pre></div>
+
+  <div class="code-label">Core Physics — Dynamic Calculation per Frame</div>
+  <div class="code-block"><pre><span class="c-comment">% Per animation frame: compute strain, resistance, voltage</span>
+strainValue   = strain(frameIdx);
+resistance    = resistanceBase * (<span class="c-number">1</span> + gaugeFactor * strainValue);
+outputVoltage = (voltageSupply / resistanceBase) * resistance;
+gaugeLength   = gaugeBaseLength + <span class="c-number">0.2</span> * force; <span class="c-comment">% Visual deformation</span></pre></div>
+
+  <div class="code-label">Note on Simulation Scope</div>
+  <div class="code-block"><pre><span class="c-comment">% This code illustrates the working principle only.</span>
+<span class="c-comment">% In real conditions, a Wheatstone bridge with 3 extra resistors</span>
+<span class="c-comment">% is used to amplify the output voltage for practical measurement.</span>
+<span class="c-comment">% With proper calibration, strain in a structural element can be</span>
+<span class="c-comment">% measured with much greater accuracy.</span></pre></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PARAMETERS TABLE -->
+<section>
+  <div class="section-label">Parameters</div>
+  <h2>Full Simulation <em>Parameters.</em></h2>
+  <table class="flow-table">
+    <thead>
+      <tr><th>Parameter</th><th>Symbol</th><th>Value</th><th>Unit</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="5" style="color:var(--accent2);font-family:var(--font-mono);font-size:11px;padding-top:1.25rem;padding-bottom:0.25rem;letter-spacing:0.08em;">SENSOR SPECIFICATIONS</td></tr>
+      <tr><td>Base resistance</td><td class="param">R₀</td><td class="value">120</td><td>Ω</td><td>SGD-series semiconductor gauge</td></tr>
+      <tr><td>Gauge factor</td><td class="param">GF</td><td class="value">2</td><td>—</td><td>Piezoresistive sensitivity coefficient</td></tr>
+      <tr><td>Base gauge length</td><td class="param">L₀</td><td class="value">15</td><td>mm</td><td>Physical sensing element length</td></tr>
+      <tr><td>Gauge width</td><td class="param">W</td><td class="value">10</td><td>mm</td><td>Physical sensing element width</td></tr>
+      <tr><td colspan="5" style="color:var(--accent2);font-family:var(--font-mono);font-size:11px;padding-top:1.25rem;padding-bottom:0.25rem;letter-spacing:0.08em;">CIRCUIT PARAMETERS</td></tr>
+      <tr><td>Supply voltage</td><td class="param">Vs</td><td class="value">5</td><td>V</td><td>DC input to the sensing circuit</td></tr>
+      <tr><td>Strain sensitivity</td><td class="param">S</td><td class="value">5</td><td>Ω/unit</td><td>Resistance change per force unit</td></tr>
+      <tr><td colspan="5" style="color:var(--accent2);font-family:var(--font-mono);font-size:11px;padding-top:1.25rem;padding-bottom:0.25rem;letter-spacing:0.08em;">SIMULATION SETTINGS</td></tr>
+      <tr><td>Max applied force</td><td class="param">F_max</td><td class="value">+10</td><td>—</td><td>Arbitrary force units (tension)</td></tr>
+      <tr><td>Min applied force</td><td class="param">F_min</td><td class="value">−10</td><td>—</td><td>Arbitrary force units (compression)</td></tr>
+      <tr><td>Strain range</td><td class="param">ε</td><td class="value">−0.02 to +0.02</td><td>—</td><td>−2% to +2% strain</td></tr>
+      <tr><td>Simulation steps</td><td class="param">N</td><td class="value">100</td><td>frames</td><td>Linear sweep across full range</td></tr>
+      <tr><td>Time step</td><td class="param">Δt</td><td class="value">0.05</td><td>s</td><td>Animation frame duration</td></tr>
+      <tr><td colspan="5" style="color:var(--accent2);font-family:var(--font-mono);font-size:11px;padding-top:1.25rem;padding-bottom:0.25rem;letter-spacing:0.08em;">COMPUTED OUTPUTS (at ε = ±0.02)</td></tr>
+      <tr><td>Max gauge resistance</td><td class="param">Rg_max</td><td class="value">124.8</td><td>Ω</td><td>At maximum tension strain</td></tr>
+      <tr><td>Min gauge resistance</td><td class="param">Rg_min</td><td class="value">115.2</td><td>Ω</td><td>At maximum compression strain</td></tr>
+      <tr><td>Max output voltage</td><td class="param">Vout_max</td><td class="value">5.20</td><td>V</td><td>At ε = +0.02</td></tr>
+      <tr><td>Min output voltage</td><td class="param">Vout_min</td><td class="value">4.80</td><td>V</td><td>At ε = −0.02</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONCLUSION -->
+<section>
+  <div class="section-label">Outcome</div>
+  <h2>What This <em>Demonstrated.</em></h2>
+  <div class="conclusion-grid">
+    <div class="concl-card highlight">
+      <div class="concl-label">Core Achievement</div>
+      <div class="concl-value">Full Chain</div>
+      <div class="concl-desc">Complete sensing chain simulated from mechanical strain → resistance change → voltage output → visual display, all in real time.</div>
+    </div>
+    <div class="concl-card">
+      <div class="concl-label">Voltage Swing</div>
+      <div class="concl-value">±0.2 V</div>
+      <div class="concl-desc">Output voltage varies from 4.8 V to 5.2 V across the full strain range, demonstrating measurable signal sensitivity with a 5 V supply.</div>
+    </div>
+    <div class="concl-card">
+      <div class="concl-label">Resistance Change</div>
+      <div class="concl-value">±4.8 Ω</div>
+      <div class="concl-desc">Peak resistance deviation from base at ±2% strain — a 4% variation, consistent with the gauge factor of 2 applied to the SGD specification.</div>
+    </div>
+    <div class="concl-card">
+      <div class="concl-label">Skills Demonstrated</div>
+      <div class="concl-value">MATLAB</div>
+      <div class="concl-desc">Sensor physics modelling, animated simulation programming, real-time data visualisation, and mechatronic system simulation methodology.</div>
+    </div>
+  </div>
+
+  <div class="tech-stack" style="margin-top:2.5rem;">
+    <span class="tech-chip">MATLAB</span>
+    <span class="tech-chip">Animated Simulation</span>
+    <span class="tech-chip">Piezoresistive Sensing</span>
+    <span class="tech-chip">SGD Series Sensor</span>
+    <span class="tech-chip">Signal Chain Modelling</span>
+    <span class="tech-chip">Wheatstone Bridge Theory</span>
+    <span class="tech-chip">Mechatronic System Simulation</span>
+    <span class="tech-chip">THD — Masters Project</span>
+  </div>
+</section>
+
+<!-- INTERACTIVE SIMULATION SCRIPT -->
+<script>
+const canvas = document.getElementById('gaugeCanvas');
+const ctx = canvas.getContext('2d');
+const slider = document.getElementById('strainSlider');
+
+function resizeCanvas() {
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', () => { resizeCanvas(); draw(); });
+
+function draw() {
+  const W = canvas.width, H = canvas.height;
+  const strainRaw = parseInt(slider.value);
+  const strain = strainRaw / 10000; // map -200..200 to -0.02..0.02
+  const R0 = 120, GF = 2, Vs = 5;
+  const Rg = R0 * (1 + GF * strain);
+  const Vout = (Vs / R0) * Rg;
+  const dR = ((Rg - R0) / R0) * 100;
+
+  // Update readouts
+  document.getElementById('strainReadout').textContent = `ε = ${strain.toFixed(4)}`;
+  document.getElementById('outR').innerHTML = `${Rg.toFixed(1)}<span class="sim-out-unit">Ω</span>`;
+  document.getElementById('outV').innerHTML = `${Vout.toFixed(3)}<span class="sim-out-unit">V</span>`;
+  document.getElementById('outDR').innerHTML = `${dR.toFixed(2)}<span class="sim-out-unit">%</span>`;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = '#21242f';
+  ctx.fillRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H / 2;
+  const baseW = Math.min(160, W * 0.22);
+  const strainedW = baseW + strain * baseW * 8;
+  const gaugeH = Math.min(32, H * 0.18);
+
+  // -- DC Supply box --
+  const supX = cx - 260, supY = cy - 22;
+  ctx.strokeStyle = 'rgba(240,165,0,0.5)'; ctx.lineWidth = 1.5;
+  ctx.fillStyle = 'rgba(240,165,0,0.08)';
+  roundRect(ctx, supX, supY, 80, 44, 6);
+  ctx.fillStyle = '#f0a500'; ctx.font = '10px DM Mono,monospace'; ctx.textAlign = 'center';
+  ctx.fillText('DC Supply', supX + 40, supY + 17);
+  ctx.fillText('5 V', supX + 40, supY + 33);
+
+  // Wire supply → gauge
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(supX + 80, cy); ctx.lineTo(cx - strainedW / 2 - 20, cy); ctx.stroke();
+
+  // -- Gauge body --
+  const color = strain > 0 ? `rgba(232,65,24,${0.15 + strain * 3})` : `rgba(26,86,219,${0.15 + Math.abs(strain) * 3})`;
+  const strokeColor = strain > 0 ? 'rgba(232,65,24,0.6)' : 'rgba(26,86,219,0.6)';
+  ctx.fillStyle = color; ctx.strokeStyle = strokeColor; ctx.lineWidth = 2;
+  roundRect(ctx, cx - strainedW / 2, cy - gaugeH / 2, strainedW, gaugeH, 6);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '10px DM Mono,monospace'; ctx.textAlign = 'center';
+  ctx.fillText(`Rg = ${Rg.toFixed(1)} Ω`, cx, cy + 3);
+
+  // Force arrows
+  if (Math.abs(strain) > 0.001) {
+    const arrowLen = Math.abs(strain) * 400;
+    ctx.strokeStyle = '#f0a500'; ctx.lineWidth = 2;
+    if (strain > 0) {
+      drawArrow(ctx, cx - strainedW / 2 - 5, cy, cx - strainedW / 2 - 5 - arrowLen, cy);
+      drawArrow(ctx, cx + strainedW / 2 + 5, cy, cx + strainedW / 2 + 5 + arrowLen, cy);
+    } else {
+      drawArrow(ctx, cx - strainedW / 2 - arrowLen - 5, cy, cx - strainedW / 2 + 5, cy);
+      drawArrow(ctx, cx + strainedW / 2 + arrowLen + 5, cy, cx + strainedW / 2 - 5, cy);
+    }
+  }
+
+  // Wire gauge → voltmeter
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx + strainedW / 2 + 20, cy); ctx.lineTo(cx + 200, cy); ctx.stroke();
+
+  // -- Voltmeter circle --
+  const vmx = cx + 225, vmy = cy;
+  ctx.beginPath(); ctx.arc(vmx, vmy, 32, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0,201,167,0.08)'; ctx.fill();
+  ctx.strokeStyle = 'rgba(0,201,167,0.4)'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // Needle angle based on Vout
+  const needleAngle = Math.PI + (Vout - 4.5) * Math.PI / 1.5;
+  ctx.strokeStyle = '#00c9a7'; ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(vmx, vmy);
+  ctx.lineTo(vmx + 22 * Math.cos(needleAngle), vmy + 22 * Math.sin(needleAngle));
+  ctx.stroke();
+
+  ctx.fillStyle = '#00c9a7'; ctx.font = '10px DM Mono,monospace'; ctx.textAlign = 'center';
+  ctx.fillText(`${Vout.toFixed(2)}V`, vmx, vmy + 48);
+
+  // Labels
+  ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.font = '10px DM Mono,monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('Semiconductor Gauge', cx, cy + gaugeH / 2 + 20);
+  const typeLabel = strain > 0 ? '← Tension (stretching)' : strain < 0 ? '→ Compression' : 'No strain applied';
+  ctx.fillStyle = strain > 0 ? 'rgba(232,65,24,0.7)' : strain < 0 ? 'rgba(26,86,219,0.8)' : 'rgba(255,255,255,0.3)';
+  ctx.fillText(typeLabel, cx, H - 14);
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y); ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h); ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+}
+
+function drawArrow(ctx, x1, y1, x2, y2) {
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - 8 * Math.cos(angle - 0.4), y2 - 8 * Math.sin(angle - 0.4));
+  ctx.lineTo(x2 - 8 * Math.cos(angle + 0.4), y2 - 8 * Math.sin(angle + 0.4));
+  ctx.closePath(); ctx.fillStyle = '#f0a500'; ctx.fill();
+}
+
+slider.addEventListener('input', draw);
+draw();
+</script>
+<div class="proj-end-line"></div>
+</div>
+
+<div id="pointcloud" class="project-block" style="--proj-accent:#7c3aed">
+<div class="proj-sep"><span class="proj-num-tag">Project 09</span><span class="proj-title-tag">Point Cloud → CAD</span></div>
+<div class="hero">
+  <div class="hero-bg">CLOUD</div>
+  <div class="wip-badge"><div class="wip-dot"></div>Work in Progress — Active Development</div>
+  <h1>Point Cloud<br>to <em>CAD</em> —<br>Lua Pipeline.</h1>
+  <p class="hero-sub">An ongoing personal project to automate the conversion of raw 3D point cloud scan data into usable parametric CAD geometry using Lua scripting — bridging real-world scanning and digital manufacturing workflows.</p>
+  <div class="hero-meta">
+    <div><div class="meta-label">Type</div><div class="meta-value">Personal R&D Project</div></div>
+    <div><div class="meta-label">Language</div><div class="meta-value">Lua · IceSL</div></div>
+    <div><div class="meta-label">Status</div><div class="meta-value">In Active Development</div></div>
+    <div><div class="meta-label">Goal</div><div class="meta-value">Scan → Parametric CAD, Automated</div></div>
+  </div>
+</div>
+
+<!-- WHAT IT IS -->
+<section>
+  <div class="slabel">The Idea</div>
+  <h2>The gap between<br><em>the real world</em> and CAD.</h2>
+  <p class="lead">3D scanners generate point clouds — millions of raw XYZ coordinates that describe a real object's surface. But a point cloud is not a CAD model. It has no features, no parametric relationships, no geometry you can dimension or modify. This project builds a Lua-based pipeline to bridge that gap automatically.</p>
+
+  <div class="concept-card">
+    <div class="concept-label">The Problem</div>
+    <div class="concept-text">When you scan a real-world object — a worn part, a legacy component, a prototype — you get a dense point cloud. Converting this into a usable CAD model today requires either expensive reverse-engineering software (like Geomagic) or hours of manual reconstruction. For small engineering teams and makers, neither is accessible.</div>
+  </div>
+
+  <div class="concept-card" style="border-left-color:var(--accent2)">
+    <div class="concept-label" style="color:var(--accent2)">The Approach</div>
+    <div class="concept-text">Using Lua scripting within IceSL — the same parametric AM environment used in the Curvic Coupling project — the goal is to read point cloud data, extract geometric primitives (planes, cylinders, curves), and reconstruct a parametric solid model automatically. No proprietary software. No manual tracing. Script-driven and reproducible.</div>
+  </div>
+
+  <div class="concept-card" style="border-left-color:#10b981">
+    <div class="concept-label" style="color:#10b981">Why It Matters</div>
+    <div class="concept-text">This kind of pipeline has direct applications in automotive reverse engineering, legacy part reconstruction, quality inspection (scan vs. CAD comparison), and additive manufacturing of replacement components. It connects physical inspection tools (3D scanners) with digital manufacturing workflows — a genuinely useful tool for any engineering workshop.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PIPELINE FLOW -->
+<section>
+  <div class="slabel">Pipeline Architecture</div>
+  <h2>How the pipeline<br><em>works.</em></h2>
+
+  <div class="flow">
+    <div class="flow-node done">
+      <div class="flow-node-title">Point Cloud Input</div>
+      <div class="flow-node-sub">.xyz / .ply file</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node done">
+      <div class="flow-node-title">Data Parsing</div>
+      <div class="flow-node-sub">Lua file reader</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node active">
+      <div class="flow-node-title">Geometry Detection</div>
+      <div class="flow-node-sub">Planes · Cylinders</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node todo">
+      <div class="flow-node-title">Solid Reconstruction</div>
+      <div class="flow-node-sub">CSG in IceSL</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node todo">
+      <div class="flow-node-title">CAD Output</div>
+      <div class="flow-node-sub">Printable geometry</div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:1.5rem;margin-top:1rem;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.5)"><div style="width:10px;height:10px;border-radius:50%;background:#34d399;flex-shrink:0"></div>Completed</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.5)"><div style="width:10px;height:10px;border-radius:50%;background:#a78bfa;flex-shrink:0"></div>In progress</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.5)"><div style="width:10px;height:10px;border-radius:50%;background:#6b7080;flex-shrink:0"></div>Planned</div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" style="margin-top:2.5rem">
+    <div class="progress-label"><span>Overall progress</span><span>~35%</span></div>
+    <div class="progress-bar"><div class="progress-fill"></div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- UPDATE LOG -->
+<section>
+  <div class="slabel">Development Log</div>
+  <h2>What's been<br><em>done so far.</em></h2>
+
+  <div class="update-item">
+    <div class="update-date">Current</div>
+    <div class="update-text"><strong>Geometry detection in progress</strong> — working on plane fitting using least-squares regression across point subsets, and cylinder detection using RANSAC-inspired approach in Lua.</div>
+  </div>
+  <div class="update-item">
+    <div class="update-date">Earlier</div>
+    <div class="update-text"><strong>Point cloud parser complete</strong> — Lua script successfully reads .xyz format point cloud files, parses XYZ coordinates into structured tables, and filters noise using distance thresholding.</div>
+  </div>
+  <div class="update-item">
+    <div class="update-date">Earlier</div>
+    <div class="update-text"><strong>Concept validated</strong> — confirmed that IceSL's Lua environment can handle point data volumes typical of desktop scanner output. Basic bounding box and centroid extraction working correctly.</div>
+  </div>
+  <div class="update-item">
+    <div class="update-date">Planned</div>
+    <div class="update-text"><strong>Solid reconstruction</strong> — once geometric primitives are detected, use CSG operations in IceSL to reconstruct the solid body from the identified planes and cylinders.</div>
+  </div>
+  <div class="update-item">
+    <div class="update-date">Planned</div>
+    <div class="update-text"><strong>Test case</strong> — validate the full pipeline on a simple machined part (cylinder with flat faces) scanned with a structured light scanner.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TECH & STATUS -->
+<section>
+  <div class="slabel">Tools & Status</div>
+  <h2>Stack &amp; what's<br><em>coming next.</em></h2>
+
+  <div class="pill-grid">
+    <span class="pill purple">Lua Scripting</span>
+    <span class="pill purple">IceSL</span>
+    <span class="pill purple">Point Cloud Processing</span>
+    <span class="pill">Plane Fitting (Least Squares)</span>
+    <span class="pill">RANSAC Geometry Detection</span>
+    <span class="pill">CSG Solid Reconstruction</span>
+    <span class="pill">Reverse Engineering</span>
+    <span class="pill">3D Scanning</span>
+    <span class="pill">Additive Manufacturing</span>
+    <span class="pill">Parametric Modelling</span>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid rgba(124,58,237,0.2);border-radius:14px;padding:1.75rem 2rem;margin-top:2rem">
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem">This page will be updated as the project progresses</div>
+    <div style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.75">Building on the parametric Lua scripting experience from the Curvic Coupling project, this extends the same environment toward a new application — one with direct industrial relevance in quality control, legacy part reproduction, and scan-based manufacturing.</div>
+  </div>
+</section>
+<div class="proj-end-line"></div>
+</div>
+
+<footer style="padding:2rem 4rem;display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:12px;color:var(--muted);border-top:1px solid var(--border);background:var(--bg)">
+  <span>Kripal Detroja — Engineering Portfolio · 2025</span>
+  <span style="color:#e84118">Mechatronics &amp; Automotive Engineer · THD Deggendorf · Germany</span>
 </footer>
 
 </body>
