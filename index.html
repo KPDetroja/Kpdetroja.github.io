@@ -343,6 +343,25 @@ pre{font-family:var(--font-mono);font-size:12px;line-height:1.65;color:rgba(255,
   .arch-grid{grid-template-columns:1fr}
   .ov-grid,.overview-grid{grid-template-columns:1fr 1fr}
 }
+
+/* ===== EBICYCLE PROJECT EXTRAS ===== */
+.work-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin: 1.5rem 0; }
+.work-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; }
+.work-num { font-family: var(--font-head); font-size: 1.6rem; color: var(--proj-accent); margin-bottom: .35rem; }
+.work-title { font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: .3rem; }
+.work-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.timeline-grid { display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0; }
+.tl-item { display: flex; gap: 1.25rem; padding: 1.1rem 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+.tl-item:last-child { border-bottom: none; }
+.tl-month { font-family: var(--font-mono); font-size: 10px; color: var(--muted); min-width: 65px; margin-top: 3px; }
+.tl-title { font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: .25rem; }
+.tl-desc { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+.outcome-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+.outcome-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--proj-accent); border-radius: 10px; padding: 1.1rem 1.35rem; }
+.outcome-label { font-family: var(--font-mono); font-size: 10px; color: var(--proj-accent); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .4rem; }
+.outcome-text { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.6; }
+.hero-sub { font-size: 1rem; color: rgba(255,255,255,0.55); max-width: 620px; line-height: 1.75; margin-bottom: 2.5rem; }
+
 </style>
 </head>
 <body>
@@ -350,13 +369,14 @@ pre{font-family:var(--font-mono);font-size:12px;line-height:1.65;color:rgba(255,
 <nav class="master-nav">
   <a href="#brake" class="nav-home">Kripal.dev</a>
   <a href="#brake" class="nav-proj">01. Braking System Design</a>
-<a href="#curvic" class="nav-proj">02. Parametric Curvic Coupling</a>
-<a href="#vr" class="nav-proj">03. VR Driver Simulator</a>
-<a href="#coupling" class="nav-proj">04. Coupling Design — Patent</a>
-<a href="#harness" class="nav-proj">05. Wiring Harness Design</a>
-<a href="#additive" class="nav-proj">06. Additive Components</a>
-<a href="#strain" class="nav-proj">07. Strain Gauge Simulation</a>
-<a href="#pointcloud" class="nav-proj">09. Point Cloud → CAD</a>
+  <a href="#curvic" class="nav-proj">02. Parametric Curvic Coupling</a>
+  <a href="#vr" class="nav-proj">03. VR Driver Simulator</a>
+  <a href="#coupling" class="nav-proj">04. Coupling Design — Patent</a>
+  <a href="#harness" class="nav-proj">05. Wiring Harness Design</a>
+  <a href="#additive" class="nav-proj">06. Additive Components</a>
+  <a href="#ebicycle" class="nav-proj">08. E-Bicycle R&D</a>
+  <a href="#strain" class="nav-proj">07. Strain Gauge Simulation</a>
+  <a href="#pointcloud" class="nav-proj">09. Point Cloud → CAD</a>
 </nav>
 
 <div id="brake" class="project-block" style="--proj-accent:#e84118">
@@ -1831,6 +1851,252 @@ pre{font-family:var(--font-mono);font-size:12px;line-height:1.65;color:rgba(255,
     <span class="pill">Modular Product Architecture</span>
   </div>
 </section>
+<div class="proj-end-line"></div>
+</div>
+
+
+<div id="ebicycle" class="project-block" style="--proj-accent:#00c9a7">
+<div class="proj-sep"><span class="proj-num-tag">Project 08</span><span class="proj-title-tag">E-Bicycle R&D — Bachelor Thesis · Monarch Innovation</span></div>
+<section class="hero">
+  <div class="hero-tag">Bachelor of Engineering · Automobile Dept · 2022</div>
+  <h1>Research &amp;<br><em>Development</em><br>of E-Bicycle</h1>
+  <p class="hero-sub lead">A final year internship thesis carried out at Monarch Innovation Pvt. Ltd., Ahmedabad — spanning material research, frame design, fixture development, casting analysis, and market study.</p>
+  <div class="hero-meta">
+    <div class="meta-item">
+      <span>Student</span>
+      <span>Detroja Kripal Prakashbhai</span>
+    </div>
+    <div class="meta-item">
+      <span>University</span>
+      <span>Gujarat Technological University</span>
+    </div>
+    <div class="meta-item">
+      <span>Company</span>
+      <span>Monarch Innovation Pvt. Ltd.</span>
+    </div>
+    <div class="meta-item">
+      <span>Duration</span>
+      <span>Jan – Apr 2022 (15 weeks)</span>
+    </div>
+  </div>
+  <div class="hero-bg-text">EBIKE</div>
+  <div class="scroll-hint">↓ &nbsp; scroll to explore</div>
+</section>
+
+<section class="projects" id="projects">
+
+  <div class="section-label">05 Projects</div>
+
+  
+  <div class="project fade-up" id="p1">
+    <div class="accent-bar bar-green" style="grid-column:1/-1;height:3px;"></div>
+    <div class="project-left">
+      <div>
+        <div class="project-number">01</div>
+        <div class="project-role">Concept Design &amp; Adhesive Research</div>
+        <h2 class="project-title">Modular Non-Welded <span class="project-accent">E-Bicycle Frame</span></h2>
+        <p class="project-desc">Designed a weld-free bicycle frame using high-strength structural adhesives, enabling the frame to be shipped flat-pack and assembled at home like a DIY kit. The concept doubles export container capacity from 5 to 10 units per box, drastically reducing logistics cost. The frame is divided into 10 discrete modules joined using industrial-grade adhesives that achieve strength comparable to TIG welding.</p>
+      </div>
+      <div class="tags">
+        <span class="tag tag-green">Structural Design</span>
+        <span class="tag tag-green">Adhesive Bonding</span>
+        <span class="tag tag-green">Modular Assembly</span>
+        <span class="tag tag-orange">Export Logistics</span>
+      </div>
+    </div>
+    <div class="project-right">
+      <div>
+        <div class="metrics-grid">
+          <div class="metric"><div class="metric-label">Frame Modules</div><div class="metric-value green">10 Parts</div></div>
+          <div class="metric"><div class="metric-label">Adhesives Tested</div><div class="metric-value green">2 Types</div></div>
+          <div class="metric"><div class="metric-label">Shipping Gain</div><div class="metric-value green">2× Capacity</div></div>
+          <div class="metric"><div class="metric-label">Adhesive Cure Time</div><div class="metric-value">~8 Hours</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="outcomes-heading">Key Outcomes</div>
+        <ul class="outcomes-list">
+          <li>Researched Loctite HY 4080 (cyanoacrylate/acrylic hybrid) and 3M Scotch-Weld DP460 (toughened epoxy) for aluminium bonding</li>
+          <li>Evaluated shear strength, impact resistance, and cure speed per ISO 4587 test standards</li>
+          <li>Defined 10 modular frame parts: head tube, top tube, down tube, seat tube, chainstay, seat stay, dropout, BB shell, seat tube casting, and fork</li>
+          <li>Proposed a fully online, self-assembly product delivery model targeting Indian and European markets</li>
+          <li>DP460 offers 60-min work life and handling strength in 4 hours — ideal for in-field assembly</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="project fade-up" id="p2">
+    <div class="accent-bar bar-orange" style="grid-column:1/-1;height:3px;"></div>
+    <div class="project-left">
+      <div>
+        <div class="project-number">02</div>
+        <div class="project-role">CAD Design &amp; Manufacturing</div>
+        <h2 class="project-title">Adhesive Joining <span class="project-accent2">Fixture Development</span></h2>
+        <p class="project-desc">Designed and manufactured a custom precision fixture system in Autodesk Inventor to hold bicycle frame members in exact position during the 8-hour adhesive cure process. The fixture uses the 3-2-1 locating principle to constrain all degrees of freedom, with C-clamps providing clamping force without deforming the tubes. Laser-cut steel sheets (5mm, 10mm, 16mm) were sourced through vendor development on IndiaMART.</p>
+      </div>
+      <div class="tags">
+        <span class="tag tag-orange">CAD — Autodesk Inventor</span>
+        <span class="tag tag-orange">Laser Cutting</span>
+        <span class="tag tag-green">Vendor Development</span>
+        <span class="tag tag-blue">3-2-1 Locating</span>
+      </div>
+    </div>
+    <div class="project-right">
+      <div>
+        <div class="metrics-grid">
+          <div class="metric"><div class="metric-label">CAD Tool</div><div class="metric-value orange">Autodesk Inventor</div></div>
+          <div class="metric"><div class="metric-label">Sheet Thicknesses</div><div class="metric-value orange">5 / 10 / 16 mm</div></div>
+          <div class="metric"><div class="metric-label">Locating Pins</div><div class="metric-value">5 + Circular Pad</div></div>
+          <div class="metric"><div class="metric-label">Production Target</div><div class="metric-value">10–15 Fixtures</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="outcomes-heading">Key Outcomes</div>
+        <ul class="outcomes-list">
+          <li>Designed fixture using 3-2-1 locating principle with 5 pins and a circular locating pad to restrict all 6 degrees of freedom</li>
+          <li>Specified laser cutting for steel sheet components — chosen for dimensional accuracy at low tooling cost</li>
+          <li>Managed full vendor development cycle: listing on IndiaMART, inquiry mails, daily follow-up, quotations, NDA signing, proforma invoice</li>
+          <li>Fixture clamping designed to prevent deformation during cure while maintaining part alignment throughout the 8-hour process</li>
+          <li>3D CAD model created in Autodesk Inventor; design iterated for universal use across all bicycle sizes</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="project fade-up" id="p3">
+    <div class="accent-bar bar-blue" style="grid-column:1/-1;height:3px;"></div>
+    <div class="project-left">
+      <div>
+        <div class="project-number">03</div>
+        <div class="project-role">Material Science &amp; FEA-Based Design Optimisation</div>
+        <h2 class="project-title">Aluminium Frame <span class="project-accent3">Fatigue Analysis</span></h2>
+        <p class="project-desc">Investigated fatigue failure in 6061-T6 aluminium mountain bike frames through finite element analysis and destructive physical testing. Failures were found to originate at the heat-affected zone (HAZ) near weld joints. Material, heat treatment, and geometry were systematically optimised to extend predicted fatigue life from 490,000 cycles to 3,500,000 cycles — a 7× improvement — while keeping the same frame dimensions and feel.</p>
+      </div>
+      <div class="tags">
+        <span class="tag tag-blue">FEA Analysis</span>
+        <span class="tag tag-blue">Material Science</span>
+        <span class="tag tag-blue">TIG Welding</span>
+        <span class="tag tag-green">6013-T6 Aluminium</span>
+        <span class="tag tag-orange">Fatigue Testing</span>
+      </div>
+    </div>
+    <div class="project-right">
+      <div>
+        <div class="metrics-grid">
+          <div class="metric"><div class="metric-label">Base Fatigue Life</div><div class="metric-value">~490,000 cycles</div></div>
+          <div class="metric"><div class="metric-label">Optimised Life</div><div class="metric-value blue">~3,500,000 cycles</div></div>
+          <div class="metric"><div class="metric-label">HAZ Strength Loss</div><div class="metric-value orange">Up to 34%</div></div>
+          <div class="metric"><div class="metric-label">Best Alloy Found</div><div class="metric-value blue">6013-T6</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="outcomes-heading">Key Outcomes</div>
+        <ul class="outcomes-list">
+          <li>Conducted destructive fatigue tests on two donated 6061-T6 mountain bike frames; crack initiation observed at the bottom centre of the top tube adjacent to the weld HAZ</li>
+          <li>FEA failure location predictions matched physical test results within 10% cycle count difference</li>
+          <li>6013-T6 alloy showed ~50% higher fatigue strength and ~2,000,000-cycle life vs 490,000 for 6061-T6</li>
+          <li>Explored T4, T6, and T7 heat treatments — T6 remains optimal; T4 produced only ~5,500 cycles to failure</li>
+          <li>Geometry modification: extending weld length by 50% between top and down tube reduced local stress and improved life to ~3,500,000 cycles when combined with 6013-T6</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="project fade-up" id="p4">
+    <div class="accent-bar bar-amber" style="grid-column:1/-1;height:3px;"></div>
+    <div class="project-left">
+      <div>
+        <div class="project-number">04</div>
+        <div class="project-role">Alloy Research &amp; Casting Process Selection</div>
+        <h2 class="project-title">Casting Parts Design &amp; <span style="color:#FCD34D;">Material Selection</span></h2>
+        <p class="project-desc">Researched and selected optimal LM-grade aluminium alloys and casting processes for structural and aesthetic bicycle frame components including the bottom bracket shell, seat tube casting, and wheel dropouts. LM25 with T64 heat treatment was selected for most parts; LM24 for high-stress pressure die-cast dropouts. Four casting processes were evaluated — sand, gravity die, low-pressure, and high-pressure die casting.</p>
+      </div>
+      <div class="tags">
+        <span class="tag tag-orange">LM Alloy Chart</span>
+        <span class="tag tag-orange">Gravity Die Casting</span>
+        <span class="tag tag-orange">T64 Heat Treatment</span>
+        <span class="tag tag-green">LM25 / LM24</span>
+      </div>
+    </div>
+    <div class="project-right">
+      <div>
+        <div class="metrics-grid">
+          <div class="metric"><div class="metric-label">Alloys Evaluated</div><div class="metric-value" style="color:#FCD34D;">LM0 – LM31</div></div>
+          <div class="metric"><div class="metric-label">Selected Material</div><div class="metric-value" style="color:#FCD34D;">LM25 (T64)</div></div>
+          <div class="metric"><div class="metric-label">Dropout Material</div><div class="metric-value">LM24</div></div>
+          <div class="metric"><div class="metric-label">Primary Process</div><div class="metric-value">Gravity Die Casting</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="outcomes-heading">Key Outcomes</div>
+        <ul class="outcomes-list">
+          <li>Reviewed the full LM alloy chart (LM0 to LM31) — silicon content drives strength but causes brittleness above 7–8%; magnesium controls hardness; copper improves corrosion resistance</li>
+          <li>Selected T64 hardening over T6: underageing at 165°C for 4–6 hours maintains ductility while increasing tensile strength — critical for vibration-bearing bicycle parts</li>
+          <li>Gravity die casting with tilted pour chosen for optimal surface finish and process automation; dropout parts require pressure die casting for high stress resistance</li>
+          <li>LM25 not compatible with pressure die casting — LM24 substituted for dropout components</li>
+          <li>Analysed all T-temper designations (T1–T10) and mapped optimal treatment routes for each cast part type</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="project fade-up" id="p5">
+    <div class="accent-bar bar-pink" style="grid-column:1/-1;height:3px;"></div>
+    <div class="project-left">
+      <div>
+        <div class="project-number">05</div>
+        <div class="project-role">Market Analysis &amp; Technical Component Research</div>
+        <h2 class="project-title">E-Bicycle Component &amp; <span style="color:#E879F9;">Market Research</span></h2>
+        <p class="project-desc">Conducted an extensive pre-development research study covering the global e-bicycle market landscape, competitive players, all major bicycle sub-systems (frame geometry, drivetrain, brakes, suspension, electronics), and key industry requirements. Defined technical specifications for the Monarch e-bike including motor, battery, throttle, and display system — aligned with both Indian and European market expectations.</p>
+      </div>
+      <div class="tags">
+        <span class="hero-tag" style="background:rgba(232,121,249,0.12);color:#E879F9;">Market Analysis</span>
+        <span class="hero-tag" style="background:rgba(232,121,249,0.12);color:#E879F9;">Component Study</span>
+        <span class="hero-tag" style="background:rgba(232,121,249,0.12);color:#E879F9;">Frame Ergonomics</span>
+        <span class="tag tag-green">Electronics Spec</span>
+        <span class="tag tag-orange">Industry Analysis</span>
+      </div>
+    </div>
+    <div class="project-right">
+      <div>
+        <div class="metrics-grid">
+          <div class="metric"><div class="metric-label">Market Players Mapped</div><div class="metric-value" style="color:#E879F9;">18+ Global</div></div>
+          <div class="metric"><div class="metric-label">Frame Geometry Params</div><div class="metric-value" style="color:#E879F9;">15 Key Specs</div></div>
+          <div class="metric"><div class="metric-label">Battery Specified</div><div class="metric-value">48V / 720Wh</div></div>
+          <div class="metric"><div class="metric-label">Motor</div><div class="metric-value">500W Brushless Hub</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="outcomes-heading">Key Outcomes</div>
+        <ul class="outcomes-list">
+          <li>Mapped Indian bicycle industry: 2nd largest globally, ~15.5M units/year, $1.5B market value — predominantly domestic demand, exports only 5–7% of production</li>
+          <li>Identified 18+ key global players including Giant, Trek, Cannondale, Hero Cycles, and Firefox; benchmarked the Angell no-weld e-bike as direct inspiration</li>
+          <li>Studied all 15 critical frame geometry parameters including stack, reach, head tube angle, and chainstay length — varying by rider height and inseam</li>
+          <li>Specified Panasonic 50E 21700 lithium-ion cells (15Ah / 720Wh) with 50+ mile range; IP67-rated motor and battery for rain and snow resistance</li>
+          <li>Analysed mag wheels vs spoked wheels for European vs Indian terrain; compared disc vs rim braking, derailleur gear systems, and fork suspension types</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
 <div class="proj-end-line"></div>
 </div>
 
